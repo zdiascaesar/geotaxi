@@ -290,66 +290,70 @@ class _LeaveReviewComponentWidgetState
                       glowColor: FlutterFlowTheme.of(context).primary,
                     ),
                   ),
-                  Padding(
-                    padding:
-                        const EdgeInsetsDirectional.fromSTEB(16.0, 12.0, 16.0, 12.0),
-                    child: TextFormField(
-                      controller: _model.textController,
-                      focusNode: _model.textFieldFocusNode,
-                      autofocus: true,
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        labelStyle:
-                            FlutterFlowTheme.of(context).labelMedium.override(
-                                  fontFamily: 'Inter',
-                                  letterSpacing: 0.0,
-                                ),
-                        hintText: FFLocalizations.of(context).getText(
-                          '1swwv7bw' /* Оставить комментарий */,
-                        ),
-                        hintStyle:
-                            FlutterFlowTheme.of(context).labelMedium.override(
-                                  fontFamily: 'Inter',
-                                  letterSpacing: 0.0,
-                                ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Color(0xFFD5DDE0),
-                            width: 1.0,
+                  Form(
+                    key: _model.formKey,
+                    autovalidateMode: AutovalidateMode.disabled,
+                    child: Padding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                          16.0, 12.0, 16.0, 12.0),
+                      child: TextFormField(
+                        controller: _model.textController,
+                        focusNode: _model.textFieldFocusNode,
+                        autofocus: true,
+                        obscureText: false,
+                        decoration: InputDecoration(
+                          labelStyle:
+                              FlutterFlowTheme.of(context).labelMedium.override(
+                                    fontFamily: 'Inter',
+                                    letterSpacing: 0.0,
+                                  ),
+                          hintText: FFLocalizations.of(context).getText(
+                            '1swwv7bw' /* Оставить комментарий */,
                           ),
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Color(0x00000000),
-                            width: 1.0,
+                          hintStyle:
+                              FlutterFlowTheme.of(context).labelMedium.override(
+                                    fontFamily: 'Inter',
+                                    letterSpacing: 0.0,
+                                  ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Color(0xFFD5DDE0),
+                              width: 1.0,
+                            ),
+                            borderRadius: BorderRadius.circular(12.0),
                           ),
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Color(0x00000000),
-                            width: 1.0,
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Color(0x00000000),
+                              width: 1.0,
+                            ),
+                            borderRadius: BorderRadius.circular(12.0),
                           ),
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Color(0x00000000),
-                            width: 1.0,
+                          errorBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Color(0x00000000),
+                              width: 1.0,
+                            ),
+                            borderRadius: BorderRadius.circular(12.0),
                           ),
-                          borderRadius: BorderRadius.circular(12.0),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Color(0x00000000),
+                              width: 1.0,
+                            ),
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xFFF7F8F9),
                         ),
-                        filled: true,
-                        fillColor: const Color(0xFFF7F8F9),
+                        style: FlutterFlowTheme.of(context).bodyMedium.override(
+                              fontFamily: 'Inter',
+                              letterSpacing: 0.0,
+                            ),
+                        maxLines: 8,
+                        validator:
+                            _model.textControllerValidator.asValidator(context),
                       ),
-                      style: FlutterFlowTheme.of(context).bodyMedium.override(
-                            fontFamily: 'Inter',
-                            letterSpacing: 0.0,
-                          ),
-                      maxLines: 8,
-                      validator:
-                          _model.textControllerValidator.asValidator(context),
                     ),
                   ),
                   Padding(

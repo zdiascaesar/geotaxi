@@ -1716,6 +1716,16 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'en': '',
       'tr': '',
     },
+    'urg37hap': {
+      'ru': 'Обязательное поле',
+      'en': 'Required field',
+      'tr': 'Gerekli alan',
+    },
+    'ddg6teie': {
+      'ru': 'Please choose an option from the dropdown',
+      'en': '',
+      'tr': '',
+    },
     'j9ngoxm8': {
       'ru': 'Оценить поездку',
       'en': 'Rate this trip',
