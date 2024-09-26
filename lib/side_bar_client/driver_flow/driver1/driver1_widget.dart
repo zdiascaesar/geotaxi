@@ -1,3 +1,4 @@
+import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -10,7 +11,12 @@ import 'driver1_model.dart';
 export 'driver1_model.dart';
 
 class Driver1Widget extends StatefulWidget {
-  const Driver1Widget({super.key});
+  const Driver1Widget({
+    super.key,
+    this.dismissed,
+  });
+
+  final DocumentReference? dismissed;
 
   @override
   State<Driver1Widget> createState() => _Driver1WidgetState();
@@ -33,13 +39,23 @@ class _Driver1WidgetState extends State<Driver1Widget>
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       while (_model.freeRides == 0) {
         _model.foundRides = await queryRidesRecordOnce(
-          queryBuilder: (ridesRecord) => ridesRecord.where(
-            'status',
-            isEqualTo: 0,
-          ),
+          queryBuilder: (ridesRecord) => ridesRecord
+              .where(
+                'status',
+                isEqualTo: 0,
+              )
+              .where(
+                'finished',
+                isEqualTo: false,
+              )
+              .whereNotIn(
+                  'uid',
+                  (currentUserDocument?.dismissedRides.toList() ?? [])
+                      .map((e) => e.id)
+                      .toList()),
         );
         _model.freeRides = _model.foundRides?.length;
-        setState(() {});
+        safeSetState(() {});
       }
 
       context.goNamed(
@@ -136,108 +152,143 @@ class _Driver1WidgetState extends State<Driver1Widget>
 
         return GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
-          child: Scaffold(
-            key: scaffoldKey,
-            backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-            body: Stack(
-              children: [
-                Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Color(0x3F000000),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsetsDirectional.fromSTEB(
-                              16.0, 0.0, 16.0, 0.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsetsDirectional.fromSTEB(
-                                    0.0, 100.0, 0.0, 0.0),
-                                child: SizedBox(
-                                  width: 275.0,
-                                  height: 275.0,
-                                  child: Stack(
-                                    alignment: const AlignmentDirectional(0.0, 0.0),
-                                    children: [
-                                      Align(
-                                        alignment:
-                                            const AlignmentDirectional(0.0, 0.0),
-                                        child: Container(
-                                          width: 275.0,
-                                          height: 275.0,
-                                          decoration: BoxDecoration(
-                                            color: const Color(0x66FFFFFF),
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: Colors.white,
+          child: WillPopScope(
+            onWillPop: () async => false,
+            child: Scaffold(
+              key: scaffoldKey,
+              backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+              body: Stack(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    decoration: const BoxDecoration(
+                      color: Color(0x3F000000),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                                16.0, 0.0, 16.0, 0.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
+                                      0.0, 100.0, 0.0, 0.0),
+                                  child: SizedBox(
+                                    width: 275.0,
+                                    height: 275.0,
+                                    child: Stack(
+                                      alignment: const AlignmentDirectional(0.0, 0.0),
+                                      children: [
+                                        Align(
+                                          alignment:
+                                              const AlignmentDirectional(0.0, 0.0),
+                                          child: Container(
+                                            width: 275.0,
+                                            height: 275.0,
+                                            decoration: BoxDecoration(
+                                              color: const Color(0x66FFFFFF),
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ).animateOnPageLoad(animationsMap[
+                                              'containerOnPageLoadAnimation1']!),
+                                        ),
+                                        Align(
+                                          alignment:
+                                              const AlignmentDirectional(0.0, 0.0),
+                                          child: Container(
+                                            width: 80.0,
+                                            height: 80.0,
+                                            decoration: const BoxDecoration(
+                                              color: Color(0x9AFFFFFF),
+                                              shape: BoxShape.circle,
+                                            ),
+                                          ).animateOnPageLoad(animationsMap[
+                                              'containerOnPageLoadAnimation2']!),
+                                        ),
+                                        Align(
+                                          alignment:
+                                              const AlignmentDirectional(0.0, 0.0),
+                                          child: Container(
+                                            width: 139.0,
+                                            height: 139.0,
+                                            decoration: const BoxDecoration(
+                                              color: Color(0x9AFFFFFF),
+                                              shape: BoxShape.circle,
+                                            ),
+                                          ).animateOnPageLoad(animationsMap[
+                                              'containerOnPageLoadAnimation3']!),
+                                        ),
+                                        Align(
+                                          alignment:
+                                              const AlignmentDirectional(0.0, 0.0),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            child: Image.asset(
+                                              'assets/images/car_top.png',
+                                              width: 50.0,
+                                              height: 94.0,
+                                              fit: BoxFit.contain,
                                             ),
                                           ),
-                                        ).animateOnPageLoad(animationsMap[
-                                            'containerOnPageLoadAnimation1']!),
-                                      ),
-                                      Align(
-                                        alignment:
-                                            const AlignmentDirectional(0.0, 0.0),
-                                        child: Container(
-                                          width: 80.0,
-                                          height: 80.0,
-                                          decoration: const BoxDecoration(
-                                            color: Color(0x9AFFFFFF),
-                                            shape: BoxShape.circle,
-                                          ),
-                                        ).animateOnPageLoad(animationsMap[
-                                            'containerOnPageLoadAnimation2']!),
-                                      ),
-                                      Align(
-                                        alignment:
-                                            const AlignmentDirectional(0.0, 0.0),
-                                        child: Container(
-                                          width: 139.0,
-                                          height: 139.0,
-                                          decoration: const BoxDecoration(
-                                            color: Color(0x9AFFFFFF),
-                                            shape: BoxShape.circle,
-                                          ),
-                                        ).animateOnPageLoad(animationsMap[
-                                            'containerOnPageLoadAnimation3']!),
-                                      ),
-                                      Align(
-                                        alignment:
-                                            const AlignmentDirectional(0.0, 0.0),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                          child: Image.asset(
-                                            'assets/images/car_top.png',
-                                            width: 50.0,
-                                            height: 94.0,
-                                            fit: BoxFit.contain,
-                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Expanded(
-                                child: Align(
-                                  alignment: const AlignmentDirectional(0.0, 1.0),
-                                  child: Padding(
-                                    padding: const EdgeInsetsDirectional.fromSTEB(
-                                        0.0, 0.0, 0.0, 40.0),
+                                Expanded(
+                                  child: Align(
+                                    alignment: const AlignmentDirectional(0.0, 1.0),
+                                    child: Padding(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
+                                          0.0, 0.0, 0.0, 40.0),
+                                      child: Text(
+                                        FFLocalizations.of(context).getText(
+                                          '6w12c0tp' /* Поиск заказов */,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                        style: FlutterFlowTheme.of(context)
+                                            .labelLarge
+                                            .override(
+                                              fontFamily: 'Inter',
+                                              color: Colors.white,
+                                              letterSpacing: 0.0,
+                                            ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
+                                      0.0, 0.0, 0.0, 40.0),
+                                  child: InkWell(
+                                    splashColor: Colors.transparent,
+                                    focusColor: Colors.transparent,
+                                    hoverColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    onTap: () async {
+                                      await currentUserReference!
+                                          .update(createUsersRecordData(
+                                        inprogress: false,
+                                        readyForWork: true,
+                                      ));
+
+                                      context.goNamed('HomePage');
+                                    },
                                     child: Text(
                                       FFLocalizations.of(context).getText(
-                                        '6w12c0tp' /* Поиск заказов */,
+                                        '0djj512e' /* Отмена */,
                                       ),
                                       textAlign: TextAlign.center,
                                       style: FlutterFlowTheme.of(context)
@@ -250,41 +301,15 @@ class _Driver1WidgetState extends State<Driver1Widget>
                                     ),
                                   ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsetsDirectional.fromSTEB(
-                                    0.0, 0.0, 0.0, 40.0),
-                                child: InkWell(
-                                  splashColor: Colors.transparent,
-                                  focusColor: Colors.transparent,
-                                  hoverColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  onTap: () async {
-                                    context.goNamed('HomePage');
-                                  },
-                                  child: Text(
-                                    FFLocalizations.of(context).getText(
-                                      '0djj512e' /* Отмена */,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                    style: FlutterFlowTheme.of(context)
-                                        .labelLarge
-                                        .override(
-                                          fontFamily: 'Inter',
-                                          color: Colors.white,
-                                          letterSpacing: 0.0,
-                                        ),
-                                  ),
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );

@@ -52,7 +52,7 @@ class _CustomMapTwoState extends State<CustomMapTwo> {
     final end =
         latlong2.LatLng(widget.fromWhere.latitude, widget.fromWhere.longitude);
     final url = Uri.parse(
-        'https://api.mapbox.com/directions/v5/mapbox/driving/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?geometries=geojson&access_token=$accessToken');
+        'https://api.mapbox.com/directions/v5/mapbox/driving/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?geometries=geojson&overview=full&access_token=$accessToken');
 
     try {
       final response = await http.get(url);

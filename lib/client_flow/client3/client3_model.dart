@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 class Client3Model extends FlutterFlowModel<Client3Widget> {
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   RidesRecord? client3PreviousSnapshot;
   // Model for SideBar component.
   late SideBarModel sideBarModel;

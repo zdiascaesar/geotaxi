@@ -10,7 +10,6 @@ import 'schema/car_record.dart';
 import 'schema/rides_record.dart';
 import 'schema/reviews_record.dart';
 import 'schema/ride_cancels_record.dart';
-import 'schema/drivers_record.dart';
 import 'schema/chat_record.dart';
 import 'schema/support_chat_record.dart';
 import 'schema/notifications_record.dart';
@@ -31,7 +30,6 @@ export 'schema/car_record.dart';
 export 'schema/rides_record.dart';
 export 'schema/reviews_record.dart';
 export 'schema/ride_cancels_record.dart';
-export 'schema/drivers_record.dart';
 export 'schema/chat_record.dart';
 export 'schema/support_chat_record.dart';
 export 'schema/notifications_record.dart';
@@ -226,43 +224,6 @@ Future<List<RideCancelsRecord>> queryRideCancelsRecordOnce({
     queryCollectionOnce(
       RideCancelsRecord.collection,
       RideCancelsRecord.fromSnapshot,
-      queryBuilder: queryBuilder,
-      limit: limit,
-      singleRecord: singleRecord,
-    );
-
-/// Functions to query DriversRecords (as a Stream and as a Future).
-Future<int> queryDriversRecordCount({
-  Query Function(Query)? queryBuilder,
-  int limit = -1,
-}) =>
-    queryCollectionCount(
-      DriversRecord.collection,
-      queryBuilder: queryBuilder,
-      limit: limit,
-    );
-
-Stream<List<DriversRecord>> queryDriversRecord({
-  Query Function(Query)? queryBuilder,
-  int limit = -1,
-  bool singleRecord = false,
-}) =>
-    queryCollection(
-      DriversRecord.collection,
-      DriversRecord.fromSnapshot,
-      queryBuilder: queryBuilder,
-      limit: limit,
-      singleRecord: singleRecord,
-    );
-
-Future<List<DriversRecord>> queryDriversRecordOnce({
-  Query Function(Query)? queryBuilder,
-  int limit = -1,
-  bool singleRecord = false,
-}) =>
-    queryCollectionOnce(
-      DriversRecord.collection,
-      DriversRecord.fromSnapshot,
       queryBuilder: queryBuilder,
       limit: limit,
       singleRecord: singleRecord,

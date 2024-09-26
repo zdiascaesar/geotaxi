@@ -17,6 +17,10 @@ class ClientBottomSheetModel extends FlutterFlowModel<ClientBottomSheetWidget> {
 
   int? amount = 0;
 
+  bool? isHiddenFrom;
+
+  bool? isHiddenTo;
+
   ///  State fields for stateful widgets in this component.
 
   final formKey = GlobalKey<FormState>();
@@ -36,6 +40,8 @@ class ClientBottomSheetModel extends FlutterFlowModel<ClientBottomSheetWidget> {
 
   // Stores action output result for [Backend Call - API (Places Google API)] action in TextField widget.
   ApiCallResponse? fromWhere2;
+  // Stores action output result for [Custom Action - chekLocation] action in Text widget.
+  bool? location;
   // Stores action output result for [Bottom Sheet - MapFromPageComponent] action in Text widget.
   String? getFromAddress;
   // Stores action output result for [Backend Call - API (Google API)] action in Row widget.
@@ -60,6 +66,8 @@ class ClientBottomSheetModel extends FlutterFlowModel<ClientBottomSheetWidget> {
   String? getToAddress;
   // Stores action output result for [Backend Call - API (Google API)] action in Row widget.
   ApiCallResponse? toWhere;
+  // Stores action output result for [Firestore Query - Query a collection] action in Button widget.
+  List<UsersRecord>? foundUsers;
   // Stores action output result for [Backend Call - Create Document] action in Button widget.
   RidesRecord? newOrderRide;
 

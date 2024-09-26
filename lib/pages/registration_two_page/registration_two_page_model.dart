@@ -1,13 +1,11 @@
 import '/flutter_flow/flutter_flow_util.dart';
 import 'registration_two_page_widget.dart' show RegistrationTwoPageWidget;
 import 'package:flutter/material.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class RegistrationTwoPageModel
     extends FlutterFlowModel<RegistrationTwoPageWidget> {
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   final formKey = GlobalKey<FormState>();
   // State field(s) for firstname widget.
   FocusNode? firstnameFocusNode;
@@ -16,7 +14,7 @@ class RegistrationTwoPageModel
   String? _firstnameTextControllerValidator(BuildContext context, String? val) {
     if (val == null || val.isEmpty) {
       return FFLocalizations.of(context).getText(
-        'psrxjv68' /* Field is required */,
+        'mxm0r9bd' /* Обязательное поле */,
       );
     }
 
@@ -31,7 +29,7 @@ class RegistrationTwoPageModel
       BuildContext context, String? val) {
     if (val == null || val.isEmpty) {
       return FFLocalizations.of(context).getText(
-        'n3wlgvro' /* Field is required */,
+        '9kxxd43c' /* Обязательное поле */,
       );
     }
 
@@ -41,18 +39,20 @@ class RegistrationTwoPageModel
   // State field(s) for phoneNumber widget.
   FocusNode? phoneNumberFocusNode;
   TextEditingController? phoneNumberTextController;
-  final phoneNumberMask = MaskTextInputFormatter(mask: '+# (###) ###-##-##');
   String? Function(BuildContext, String?)? phoneNumberTextControllerValidator;
   String? _phoneNumberTextControllerValidator(
       BuildContext context, String? val) {
     if (val == null || val.isEmpty) {
       return FFLocalizations.of(context).getText(
-        'enltalc2' /* Field is required */,
+        'r9ie9q5s' /* Обязательное поле */,
       );
     }
 
     return null;
   }
+
+  // Stores action output result for [Validate Form] action in Button widget.
+  bool? formValidated;
 
   @override
   void initState(BuildContext context) {

@@ -233,6 +233,10 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               'ride',
               ParamType.Document,
             ),
+            fromHistory: params.getParam(
+              'fromHistory',
+              ParamType.bool,
+            ),
           ),
         ),
         FFRoute(
@@ -265,6 +269,12 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               'newRide',
               ParamType.Document,
             ),
+            drivers: params.getParam<DocumentReference>(
+              'drivers',
+              ParamType.DocumentReference,
+              isList: true,
+              collectionNamePath: ['users'],
+            ),
           ),
         ),
         FFRoute(
@@ -276,6 +286,10 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               ParamType.DocumentReference,
               isList: false,
               collectionNamePath: ['rides'],
+            ),
+            searchingType: params.getParam(
+              'searchingType',
+              ParamType.int,
             ),
           ),
         ),
@@ -331,7 +345,14 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: 'Driver1',
           path: '/driver1',
-          builder: (context, params) => const Driver1Widget(),
+          builder: (context, params) => Driver1Widget(
+            dismissed: params.getParam(
+              'dismissed',
+              ParamType.DocumentReference,
+              isList: false,
+              collectionNamePath: ['rides'],
+            ),
+          ),
         ),
         FFRoute(
           name: 'Driver2',

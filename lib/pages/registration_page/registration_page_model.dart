@@ -1,3 +1,4 @@
+import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'registration_page_widget.dart' show RegistrationPageWidget;
 import 'package:flutter/material.dart';
@@ -5,7 +6,6 @@ import 'package:flutter/material.dart';
 class RegistrationPageModel extends FlutterFlowModel<RegistrationPageWidget> {
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   final formKey = GlobalKey<FormState>();
   // State field(s) for EmailField widget.
   FocusNode? emailFieldFocusNode;
@@ -22,6 +22,8 @@ class RegistrationPageModel extends FlutterFlowModel<RegistrationPageWidget> {
   late bool confirmPasswordFieldVisibility;
   String? Function(BuildContext, String?)?
       confirmPasswordFieldTextControllerValidator;
+  // Stores action output result for [Firestore Query - Query a collection] action in Button widget.
+  UsersRecord? userExist;
 
   @override
   void initState(BuildContext context) {

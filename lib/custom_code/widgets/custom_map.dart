@@ -10,12 +10,14 @@ import 'package:flutter/material.dart';
 // Begin custom widget code
 // DO NOT REMOVE OR MODIFY THE CODE ABOVE!
 
+// No need to import '/custom_code/actions/index.dart' since we'll define the function here
+
 import 'package:latlong2/latlong.dart' as latlong2;
 import 'package:flutter_map/flutter_map.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
-import 'dart:math' show pi, cos, sin, pow;
+import 'package:permission_handler/permission_handler.dart';
 
 class CustomMap extends StatefulWidget {
   const CustomMap({
@@ -40,20 +42,108 @@ class CustomMap extends StatefulWidget {
 }
 
 class _CustomMapState extends State<CustomMap> {
+  late latlong2.LatLng mapCenter;
   late latlong2.LatLng userLocation;
   List<latlong2.LatLng> routePoints = [];
   latlong2.LatLng? fromLocation;
   latlong2.LatLng? toLocation;
   List<latlong2.LatLng> vehicleLocations = [];
+  final MapController mapController = MapController();
+
+  final latlong2.LatLng moscowCoordinates =
+      latlong2.LatLng(55.755826, 37.6172999);
 
   @override
   void initState() {
     super.initState();
-    userLocation = latlong2.LatLng(
-      widget.currentDeviceLocation.latitude,
-      widget.currentDeviceLocation.longitude,
-    );
+    _initializeMap();
+  }
 
+  Future<void> _initializeMap() async {
+    await _checkLocationPermission();
+
+    _updateUserLocation();
+    _updateFromToLocations();
+    vehicleLocations = widget.vehicleLocations
+        .map((location) =>
+            latlong2.LatLng(location.latitude, location.longitude))
+        .toList();
+    updateLocations();
+  }
+
+  Future<void> _checkLocationPermission() async {
+    var status = await Permission.location.status;
+
+    if (!status.isGranted) {
+      await chekLocationPermission();
+      // After the user grants permission, update the user location
+      _updateUserLocation();
+      mapController.move(mapCenter, 15.0);
+    }
+  }
+
+  Future<void> chekLocationPermission() async {
+    var status = await Permission.location.status;
+
+    while (!status.isGranted) {
+      await showDialog(
+        barrierDismissible:
+            false, // Prevents dismissing the dialog by tapping outside
+        context: context,
+        builder: (BuildContext context) {
+          return WillPopScope(
+            // Prevents dismissing the dialog by pressing the back button
+            onWillPop: () async => false,
+            child: AlertDialog(
+              backgroundColor: Color(0xFF141414),
+              title: Text(
+                'Access to Location',
+                style: TextStyle(color: Color(0xFFFAFAFA)),
+              ),
+              content: Text(
+                'To use the map, you must provide access to your location. Please allow access in settings.',
+                style: TextStyle(color: Color(0xFFFAFAFA)),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () async {
+                    await openAppSettings();
+                    // Wait for the user to return from settings
+                    await Future.delayed(Duration(seconds: 2));
+                    status = await Permission.location.status;
+                    if (status.isGranted) {
+                      Navigator.of(context).pop(); // Close the dialog
+                    }
+                  },
+                  child: Text(
+                    'Open Settings',
+                    style: TextStyle(color: Color(0xFFFAFAFA)),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+      status = await Permission.location.status;
+    }
+  }
+
+  void _updateUserLocation() {
+    setState(() {
+      userLocation = latlong2.LatLng(
+        widget.currentDeviceLocation.latitude,
+        widget.currentDeviceLocation.longitude,
+      );
+
+      mapCenter = (widget.currentDeviceLocation.latitude == 0 &&
+              widget.currentDeviceLocation.longitude == 0)
+          ? moscowCoordinates
+          : userLocation;
+    });
+  }
+
+  void _updateFromToLocations() {
     fromLocation = widget.fromWhere != null
         ? latlong2.LatLng(
             widget.fromWhere!.latitude, widget.fromWhere!.longitude)
@@ -61,29 +151,19 @@ class _CustomMapState extends State<CustomMap> {
     toLocation = widget.toWhere != null
         ? latlong2.LatLng(widget.toWhere!.latitude, widget.toWhere!.longitude)
         : null;
-
-    vehicleLocations = widget.vehicleLocations
-        .map((location) =>
-            latlong2.LatLng(location.latitude, location.longitude))
-        .toList();
-
-    updateLocations();
   }
 
   @override
   void didUpdateWidget(covariant CustomMap oldWidget) {
     super.didUpdateWidget(oldWidget);
 
+    if (widget.currentDeviceLocation != oldWidget.currentDeviceLocation) {
+      _updateUserLocation();
+    }
+
     if (widget.fromWhere != oldWidget.fromWhere ||
         widget.toWhere != oldWidget.toWhere) {
-      fromLocation = widget.fromWhere != null
-          ? latlong2.LatLng(
-              widget.fromWhere!.latitude, widget.fromWhere!.longitude)
-          : null;
-      toLocation = widget.toWhere != null
-          ? latlong2.LatLng(widget.toWhere!.latitude, widget.toWhere!.longitude)
-          : null;
-
+      _updateFromToLocations();
       updateLocations();
     }
   }
@@ -98,9 +178,9 @@ class _CustomMapState extends State<CustomMap> {
 
   Future<void> _fetchRoute(latlong2.LatLng start, latlong2.LatLng end) async {
     const accessToken =
-        'pk.eyJ1IjoiNmVremhhbiIsImEiOiJjbHppM214dWswYjB1MmtzNDRsdno4ZmFxIn0.LVh6MJeD2z0AViZebxN1-A';
+        'pk.eyJ1IjoiNmVremhhbiIsImEiOiJjbHppM214dWswYjB1MmtzNDRsdno4ZmFxIn0.LVh6MJeD2z0AViZebxN1-A'; // Replace with your Mapbox access token
     final url = Uri.parse(
-        'https://api.mapbox.com/directions/v5/mapbox/driving/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?geometries=geojson&access_token=$accessToken');
+        'https://api.mapbox.com/directions/v5/mapbox/driving/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?geometries=geojson&overview=full&access_token=$accessToken');
 
     try {
       final response = await http.get(url);
@@ -174,6 +254,17 @@ class _CustomMapState extends State<CustomMap> {
     return smoothedPoints;
   }
 
+  void _centerOnUserLocation() async {
+    if (widget.currentDeviceLocation.latitude == 0 &&
+        widget.currentDeviceLocation.longitude == 0) {
+      // User has not granted permission, invoke permission check
+      await _checkLocationPermission();
+    } else {
+      // Permission is granted, center map on user location
+      mapController.move(userLocation, 15.0);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final endIcon = Image.asset(
@@ -183,34 +274,36 @@ class _CustomMapState extends State<CustomMap> {
     );
 
     return Scaffold(
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            child: FlutterMap(
-              options: MapOptions(
-                initialCenter: userLocation,
-                initialZoom: 13.0,
-                minZoom: 5,
-                maxZoom: 18,
+          FlutterMap(
+            mapController: mapController,
+            options: MapOptions(
+              initialCenter: mapCenter,
+              initialZoom: 13.0,
+              minZoom: 5,
+              maxZoom: 18,
+            ),
+            children: [
+              TileLayer(
+                urlTemplate:
+                    "https://api.mapbox.com/styles/v1/mapbox/light-v11/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiNmVremhhbiIsImEiOiJjbHppM214dWswYjB1MmtzNDRsdno4ZmFxIn0.LVh6MJeD2z0AViZebxN1-A",
+                subdomains: const ['a', 'b', 'c'],
               ),
-              children: [
-                TileLayer(
-                  urlTemplate:
-                      "https://api.mapbox.com/styles/v1/mapbox/light-v11/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiNmVremhhbiIsImEiOiJjbHppM214dWswYjB1MmtzNDRsdno4ZmFxIn0.LVh6MJeD2z0AViZebxN1-A",
-                  subdomains: const ['a', 'b', 'c'],
+              if (routePoints.isNotEmpty)
+                PolylineLayer(
+                  polylines: [
+                    Polyline(
+                      points: routePoints,
+                      strokeWidth: 5.0,
+                      color: FlutterFlowTheme.of(context).primary,
+                    ),
+                  ],
                 ),
-                if (routePoints.isNotEmpty)
-                  PolylineLayer(
-                    polylines: [
-                      Polyline(
-                        points: routePoints,
-                        strokeWidth: 5.0,
-                        color: FlutterFlowTheme.of(context).primary,
-                      ),
-                    ],
-                  ),
-                MarkerLayer(
-                  markers: [
+              MarkerLayer(
+                markers: [
+                  if (widget.currentDeviceLocation.latitude != 0 &&
+                      widget.currentDeviceLocation.longitude != 0)
                     Marker(
                       width: 40,
                       height: 40,
@@ -245,35 +338,46 @@ class _CustomMapState extends State<CustomMap> {
                         ],
                       ),
                     ),
-                    if (fromLocation != null)
-                      Marker(
-                        width: 40,
-                        height: 40,
-                        point: fromLocation!,
-                        child: endIcon,
-                      ),
-                    if (toLocation != null)
-                      Marker(
-                        width: 40,
-                        height: 40,
-                        point: toLocation!,
-                        child: endIcon,
-                      ),
-                    ...vehicleLocations.map(
-                      (vehicleLocation) => Marker(
-                        width: 40,
-                        height: 40,
-                        point: vehicleLocation,
-                        child: Image.asset(
-                          'assets/images/car_top.png',
-                          width: 24.0,
-                          height: 48.0,
-                        ),
+                  if (fromLocation != null)
+                    Marker(
+                      width: 40,
+                      height: 40,
+                      point: fromLocation!,
+                      child: endIcon,
+                    ),
+                  if (toLocation != null)
+                    Marker(
+                      width: 40,
+                      height: 40,
+                      point: toLocation!,
+                      child: endIcon,
+                    ),
+                  ...vehicleLocations.map(
+                    (vehicleLocation) => Marker(
+                      width: 40,
+                      height: 40,
+                      point: vehicleLocation,
+                      child: Image.asset(
+                        'assets/images/car_top.png',
+                        width: 24.0,
+                        height: 48.0,
                       ),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Positioned(
+            right: 16,
+            top: 16,
+            child: FloatingActionButton(
+              onPressed: _centerOnUserLocation,
+              child: Icon(
+                Icons.my_location,
+                color: Colors.white,
+              ),
+              backgroundColor: FlutterFlowTheme.of(context).primary,
             ),
           ),
         ],

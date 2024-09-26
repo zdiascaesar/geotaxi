@@ -100,6 +100,11 @@ class RidesRecord extends FirestoreRecord {
   String get uid => _uid ?? '';
   bool hasUid() => _uid != null;
 
+  // "dismissed_by" field.
+  String? _dismissedBy;
+  String get dismissedBy => _dismissedBy ?? '';
+  bool hasDismissedBy() => _dismissedBy != null;
+
   void _initializeFields() {
     _userId = snapshotData['user_id'] as DocumentReference?;
     _fromLocation = snapshotData['from_location'] as LatLng?;
@@ -118,6 +123,7 @@ class RidesRecord extends FirestoreRecord {
     _latlng = snapshotData['latlng'] as LatLng?;
     _createdAt = snapshotData['created_at'] as DateTime?;
     _uid = snapshotData['uid'] as String?;
+    _dismissedBy = snapshotData['dismissed_by'] as String?;
   }
 
   static CollectionReference get collection =>
@@ -171,6 +177,7 @@ Map<String, dynamic> createRidesRecordData({
   LatLng? latlng,
   DateTime? createdAt,
   String? uid,
+  String? dismissedBy,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -191,6 +198,7 @@ Map<String, dynamic> createRidesRecordData({
       'latlng': latlng,
       'created_at': createdAt,
       'uid': uid,
+      'dismissed_by': dismissedBy,
     }.withoutNulls,
   );
 
@@ -218,7 +226,8 @@ class RidesRecordDocumentEquality implements Equality<RidesRecord> {
         e1?.readyToPickup == e2?.readyToPickup &&
         e1?.latlng == e2?.latlng &&
         e1?.createdAt == e2?.createdAt &&
-        e1?.uid == e2?.uid;
+        e1?.uid == e2?.uid &&
+        e1?.dismissedBy == e2?.dismissedBy;
   }
 
   @override
@@ -239,7 +248,8 @@ class RidesRecordDocumentEquality implements Equality<RidesRecord> {
         e?.readyToPickup,
         e?.latlng,
         e?.createdAt,
-        e?.uid
+        e?.uid,
+        e?.dismissedBy
       ]);
 
   @override

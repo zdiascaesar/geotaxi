@@ -2,7 +2,7 @@ import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import '/flutter_flow/permissions_util.dart';
+import '/custom_code/actions/index.dart' as actions;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'get_location_model.dart';
@@ -181,7 +181,33 @@ class _GetLocationWidgetState extends State<GetLocationWidget>
                   ),
                   FFButtonWidget(
                     onPressed: () async {
-                      await requestPermission(locationPermission);
+                      var shouldSetState = false;
+                      _model.locationPermission = await actions.chekLocation(
+                        context,
+                      );
+                      shouldSetState = true;
+                      if (_model.locationPermission!) {
+                        Navigator.pop(context);
+
+                        context.goNamed(
+                          'HomePage',
+                          extra: <String, dynamic>{
+                            kTransitionInfoKey: const TransitionInfo(
+                              hasTransition: true,
+                              transitionType: PageTransitionType.fade,
+                              duration: Duration(milliseconds: 0),
+                            ),
+                          },
+                        );
+
+                        if (shouldSetState) safeSetState(() {});
+                        return;
+                      } else {
+                        if (shouldSetState) safeSetState(() {});
+                        return;
+                      }
+
+                      if (shouldSetState) safeSetState(() {});
                     },
                     text: FFLocalizations.of(context).getText(
                       'lywgypga' /* Определить */,

@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 class Driver4Model extends FlutterFlowModel<Driver4Widget> {
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // Model for SideBar component.
   late SideBarModel sideBarModel;
 

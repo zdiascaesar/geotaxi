@@ -62,7 +62,7 @@ class _Driver3WidgetState extends State<Driver3Widget>
     });
 
     getCurrentUserLocation(defaultLocation: const LatLng(0.0, 0.0), cached: true)
-        .then((loc) => setState(() => currentUserLocationValue = loc));
+        .then((loc) => safeSetState(() => currentUserLocationValue = loc));
     animationsMap.addAll({
       'containerOnPageLoadAnimation': AnimationInfo(
         trigger: AnimationTrigger.onPageLoad,
@@ -130,7 +130,7 @@ class _Driver3WidgetState extends State<Driver3Widget>
               );
             }
 
-            setState(() {});
+            safeSetState(() {});
           }
           _model.driver3PreviousSnapshot = driver3RidesRecord;
         }),
@@ -156,411 +156,418 @@ class _Driver3WidgetState extends State<Driver3Widget>
 
         return GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
-          child: Scaffold(
-            key: scaffoldKey,
-            backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-            drawer: Drawer(
-              elevation: 16.0,
-              child: wrapWithModel(
-                model: _model.sideBarModel,
-                updateCallback: () => setState(() {}),
-                child: SideBarWidget(
-                  action: () async {},
-                ),
-              ),
-            ),
-            appBar: AppBar(
-              backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
-              automaticallyImplyLeading: false,
-              leading: FlutterFlowIconButton(
-                borderColor: Colors.transparent,
-                borderRadius: 30.0,
-                borderWidth: 1.0,
-                buttonSize: 54.0,
-                icon: const Icon(
-                  FFIcons.kline3horizontal,
-                  color: Color(0xFF1C1C1E),
-                  size: 24.0,
-                ),
-                onPressed: () async {
-                  scaffoldKey.currentState!.openDrawer();
-                },
-              ),
-              actions: const [],
-              centerTitle: false,
-              elevation: 0.5,
-            ),
-            body: Stack(
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: custom_widgets.CustomMapDriver(
-                    width: double.infinity,
-                    height: double.infinity,
-                    isStartFromDriver: true,
-                    toWhere: widget.foundRide?.fromLocation,
-                    fromWhere: currentUserLocationValue,
+          child: WillPopScope(
+            onWillPop: () async => false,
+            child: Scaffold(
+              key: scaffoldKey,
+              backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+              drawer: Drawer(
+                elevation: 16.0,
+                child: wrapWithModel(
+                  model: _model.sideBarModel,
+                  updateCallback: () => safeSetState(() {}),
+                  child: SideBarWidget(
+                    action: () async {},
                   ),
                 ),
-                Align(
-                  alignment: const AlignmentDirectional(0.0, -1.0),
-                  child: StreamBuilder<List<ChatRecord>>(
-                    stream: queryChatRecord(
-                      parent: driver3RidesRecord.reference,
-                      queryBuilder: (chatRecord) => chatRecord.where(Filter.or(
-                        Filter(
-                          'message_by',
-                          isNotEqualTo: currentUserReference,
-                        ),
-                        Filter(
-                          'messaged_at',
-                          isEqualTo: getCurrentTimestamp,
-                        ),
-                      )),
-                      singleRecord: true,
+              ),
+              appBar: AppBar(
+                backgroundColor:
+                    FlutterFlowTheme.of(context).secondaryBackground,
+                automaticallyImplyLeading: false,
+                leading: FlutterFlowIconButton(
+                  borderColor: Colors.transparent,
+                  borderRadius: 30.0,
+                  borderWidth: 1.0,
+                  buttonSize: 54.0,
+                  icon: const Icon(
+                    FFIcons.kline3horizontal,
+                    color: Color(0xFF1C1C1E),
+                    size: 24.0,
+                  ),
+                  onPressed: () async {
+                    scaffoldKey.currentState!.openDrawer();
+                  },
+                ),
+                actions: const [],
+                centerTitle: false,
+                elevation: 0.5,
+              ),
+              body: Stack(
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: custom_widgets.CustomMapDriver(
+                      width: double.infinity,
+                      height: double.infinity,
+                      isStartFromDriver: true,
+                      toWhere: widget.foundRide?.fromLocation,
+                      fromWhere: currentUserLocationValue,
                     ),
-                    builder: (context, snapshot) {
-                      // Customize what your widget looks like when it's loading.
-                      if (!snapshot.hasData) {
-                        return Center(
-                          child: SizedBox(
-                            width: 30.0,
-                            height: 30.0,
-                            child: SpinKitPulse(
-                              color: FlutterFlowTheme.of(context).primary,
-                              size: 30.0,
+                  ),
+                  Align(
+                    alignment: const AlignmentDirectional(0.0, -1.0),
+                    child: Container(
+                      width: double.infinity,
+                      height: 100.0,
+                      decoration: const BoxDecoration(),
+                      child: StreamBuilder<List<ChatRecord>>(
+                        stream: queryChatRecord(
+                          parent: driver3RidesRecord.reference,
+                          queryBuilder: (chatRecord) =>
+                              chatRecord.where(Filter.or(
+                            Filter(
+                              'message_by',
+                              isNotEqualTo: currentUserReference,
                             ),
-                          ),
-                        );
-                      }
-                      List<ChatRecord> containerChatRecordList = snapshot.data!;
-                      // Return an empty Container when the item does not exist.
-                      if (snapshot.data!.isEmpty) {
-                        return Container();
-                      }
-                      final containerChatRecord =
-                          containerChatRecordList.isNotEmpty
-                              ? containerChatRecordList.first
-                              : null;
+                            Filter(
+                              'messaged_at',
+                              isEqualTo: getCurrentTimestamp,
+                            ),
+                          )),
+                          singleRecord: true,
+                        ),
+                        builder: (context, snapshot) {
+                          // Customize what your widget looks like when it's loading.
+                          if (!snapshot.hasData) {
+                            return Center(
+                              child: SizedBox(
+                                width: 30.0,
+                                height: 30.0,
+                                child: SpinKitPulse(
+                                  color: FlutterFlowTheme.of(context).primary,
+                                  size: 30.0,
+                                ),
+                              ),
+                            );
+                          }
+                          List<ChatRecord> columnChatRecordList =
+                              snapshot.data!;
+                          // Return an empty Container when the item does not exist.
+                          if (snapshot.data!.isEmpty) {
+                            return Container();
+                          }
+                          final columnChatRecord =
+                              columnChatRecordList.isNotEmpty
+                                  ? columnChatRecordList.first
+                                  : null;
 
-                      return Container(
-                        width: double.infinity,
-                        height: 100.0,
-                        decoration: const BoxDecoration(),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            if ((containerChatRecord?.message !=
-                                    'Cancel ride') &&
-                                !containerChatRecord!.isRead
-                                    .contains(currentUserReference))
-                              InkWell(
-                                splashColor: Colors.transparent,
-                                focusColor: Colors.transparent,
-                                hoverColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
-                                onTap: () async {
-                                  await containerChatRecord.reference.update({
-                                    ...mapToFirestore(
-                                      {
-                                        'isRead': FieldValue.arrayUnion(
-                                            [currentUserReference]),
-                                      },
-                                    ),
-                                  });
+                          return Column(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              if (!columnChatRecord!.isRead
+                                  .contains(currentUserReference))
+                                InkWell(
+                                  splashColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () async {
+                                    await columnChatRecord.reference.update({
+                                      ...mapToFirestore(
+                                        {
+                                          'isRead': FieldValue.arrayUnion(
+                                              [currentUserReference]),
+                                        },
+                                      ),
+                                    });
 
-                                  context.pushNamed(
-                                    'ChatPage',
-                                    queryParameters: {
-                                      'userChat': serializeParam(
-                                        widget.foundRide?.userId,
-                                        ParamType.DocumentReference,
-                                      ),
-                                      'ride': serializeParam(
-                                        driver3RidesRecord.reference,
-                                        ParamType.DocumentReference,
-                                      ),
-                                    }.withoutNulls,
-                                  );
-                                },
-                                child: Container(
-                                  width: double.infinity,
-                                  height: 40.0,
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        blurRadius: 4.0,
-                                        color: Color(0x33000000),
-                                        offset: Offset(
-                                          0.0,
-                                          2.0,
+                                    context.pushNamed(
+                                      'ChatPage',
+                                      queryParameters: {
+                                        'userChat': serializeParam(
+                                          widget.foundRide?.userId,
+                                          ParamType.DocumentReference,
                                         ),
-                                      )
-                                    ],
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsetsDirectional.fromSTEB(
-                                        16.0, 0.0, 16.0, 0.0),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
+                                        'ride': serializeParam(
+                                          driver3RidesRecord.reference,
+                                          ParamType.DocumentReference,
+                                        ),
+                                      }.withoutNulls,
+                                    );
+                                  },
+                                  child: Container(
+                                    width: double.infinity,
+                                    height: 40.0,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          blurRadius: 4.0,
+                                          color: Color(0x33000000),
+                                          offset: Offset(
+                                            0.0,
+                                            2.0,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
+                                          16.0, 0.0, 16.0, 0.0),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              FFLocalizations.of(context)
+                                                  .getText(
+                                                '9w5nrrqn' /* У вас новое сообщение от клиен... */,
+                                              ),
+                                              style:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyMedium
+                                                      .override(
+                                                        fontFamily: 'Inter',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                            ),
+                                          ),
+                                          Text(
                                             FFLocalizations.of(context).getText(
-                                              '9w5nrrqn' /* У вас новое сообщение от клиен... */,
+                                              'xb1q404z' /* Ответить */,
                                             ),
                                             style: FlutterFlowTheme.of(context)
                                                 .bodyMedium
                                                 .override(
                                                   fontFamily: 'Inter',
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .primary,
                                                   letterSpacing: 0.0,
+                                                  fontWeight: FontWeight.w500,
                                                 ),
                                           ),
-                                        ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          );
+                        },
+                      ),
+                    ).animateOnPageLoad(
+                        animationsMap['containerOnPageLoadAnimation']!),
+                  ),
+                  Align(
+                    alignment: const AlignmentDirectional(0.0, 1.0),
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: FlutterFlowTheme.of(context).secondaryBackground,
+                        boxShadow: const [
+                          BoxShadow(
+                            blurRadius: 4.0,
+                            color: Color(0x33000000),
+                            offset: Offset(
+                              2.0,
+                              0.0,
+                            ),
+                            spreadRadius: 4.0,
+                          )
+                        ],
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(0.0),
+                          bottomRight: Radius.circular(0.0),
+                          topLeft: Radius.circular(16.0),
+                          topRight: Radius.circular(16.0),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Column(
+                            mainAxisSize: MainAxisSize.max,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Align(
+                                alignment: const AlignmentDirectional(0.0, -1.0),
+                                child: Padding(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
+                                      0.0, 10.0, 0.0, 20.0),
+                                  child: Container(
+                                    width: 30.0,
+                                    height: 5.0,
+                                    decoration: BoxDecoration(
+                                      color:
+                                          FlutterFlowTheme.of(context).primary,
+                                      borderRadius: BorderRadius.circular(16.0),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    16.0, 0.0, 16.0, 10.0),
+                                child: Container(
+                                  width: 100.0,
+                                  height: 42.0,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF7F8F9),
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    border: Border.all(
+                                      color: const Color(0xFFD5DDE0),
+                                    ),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
+                                        15.0, 0.0, 15.0, 0.0),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
                                         Text(
                                           FFLocalizations.of(context).getText(
-                                            'xb1q404z' /* Ответить */,
+                                            'ho8kca2q' /* A */,
                                           ),
                                           style: FlutterFlowTheme.of(context)
-                                              .bodyMedium
+                                              .labelLarge
                                               .override(
                                                 fontFamily: 'Inter',
                                                 color:
                                                     FlutterFlowTheme.of(context)
                                                         .primary,
                                                 letterSpacing: 0.0,
-                                                fontWeight: FontWeight.w500,
                                               ),
                                         ),
-                                      ],
+                                        Expanded(
+                                          child: Text(
+                                            valueOrDefault<String>(
+                                              widget.foundRide?.fromLoc,
+                                              'from',
+                                            ),
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodyMedium
+                                                .override(
+                                                  fontFamily: 'Inter',
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .primaryText,
+                                                  fontSize: 14.0,
+                                                  letterSpacing: 0.0,
+                                                ),
+                                          ),
+                                        ),
+                                      ].divide(const SizedBox(width: 10.0)),
                                     ),
                                   ),
                                 ),
                               ),
-                          ],
-                        ),
-                      ).animateOnPageLoad(
-                          animationsMap['containerOnPageLoadAnimation']!);
-                    },
-                  ),
-                ),
-                Align(
-                  alignment: const AlignmentDirectional(0.0, 1.0),
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: FlutterFlowTheme.of(context).secondaryBackground,
-                      boxShadow: const [
-                        BoxShadow(
-                          blurRadius: 4.0,
-                          color: Color(0x33000000),
-                          offset: Offset(
-                            2.0,
-                            0.0,
+                              Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    16.0, 0.0, 16.0, 0.0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    if (_model.awaiting == false)
+                                      Expanded(
+                                        child: FFButtonWidget(
+                                          onPressed: () async {
+                                            currentUserLocationValue =
+                                                await getCurrentUserLocation(
+                                                    defaultLocation:
+                                                        const LatLng(0.0, 0.0));
+                                            _model.awaiting = true;
+                                            safeSetState(() {});
+
+                                            await widget.foundRide!.reference
+                                                .update(createRidesRecordData(
+                                              status: 2,
+                                              pickedUpAt: getCurrentTimestamp,
+                                              latlng: currentUserLocationValue,
+                                            ));
+                                          },
+                                          text: FFLocalizations.of(context)
+                                              .getText(
+                                            'jcvxxymr' /* Жду пассажира */,
+                                          ),
+                                          options: FFButtonOptions(
+                                            height: 40.0,
+                                            padding:
+                                                const EdgeInsetsDirectional.fromSTEB(
+                                                    24.0, 0.0, 24.0, 0.0),
+                                            iconPadding:
+                                                const EdgeInsetsDirectional.fromSTEB(
+                                                    0.0, 0.0, 0.0, 0.0),
+                                            color: FlutterFlowTheme.of(context)
+                                                .primary,
+                                            textStyle:
+                                                FlutterFlowTheme.of(context)
+                                                    .titleSmall
+                                                    .override(
+                                                      fontFamily: 'Inter',
+                                                      color: Colors.white,
+                                                      letterSpacing: 0.0,
+                                                    ),
+                                            elevation: 0.0,
+                                            borderSide: const BorderSide(
+                                              color: Colors.transparent,
+                                              width: 1.0,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                          ),
+                                        ),
+                                      ),
+                                    if (_model.awaiting == true)
+                                      Expanded(
+                                        child: FFButtonWidget(
+                                          onPressed: () async {
+                                            context.goNamed(
+                                              'Driver4',
+                                              queryParameters: {
+                                                'foundRide': serializeParam(
+                                                  widget.foundRide?.reference,
+                                                  ParamType.DocumentReference,
+                                                ),
+                                              }.withoutNulls,
+                                            );
+                                          },
+                                          text: FFLocalizations.of(context)
+                                              .getText(
+                                            'v2evww1c' /* Забрал пассажира */,
+                                          ),
+                                          options: FFButtonOptions(
+                                            height: 40.0,
+                                            padding:
+                                                const EdgeInsetsDirectional.fromSTEB(
+                                                    24.0, 0.0, 24.0, 0.0),
+                                            iconPadding:
+                                                const EdgeInsetsDirectional.fromSTEB(
+                                                    0.0, 0.0, 0.0, 0.0),
+                                            color: FlutterFlowTheme.of(context)
+                                                .primary,
+                                            textStyle:
+                                                FlutterFlowTheme.of(context)
+                                                    .titleSmall
+                                                    .override(
+                                                      fontFamily: 'Inter',
+                                                      color: Colors.white,
+                                                      letterSpacing: 0.0,
+                                                    ),
+                                            elevation: 0.0,
+                                            borderSide: const BorderSide(
+                                              color: Colors.transparent,
+                                              width: 1.0,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                          ),
+                                        ),
+                                      ),
+                                  ].divide(const SizedBox(width: 10.0)),
+                                ),
+                              ),
+                            ],
                           ),
-                          spreadRadius: 4.0,
-                        )
-                      ],
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(0.0),
-                        bottomRight: Radius.circular(0.0),
-                        topLeft: Radius.circular(16.0),
-                        topRight: Radius.circular(16.0),
+                        ].addToEnd(const SizedBox(height: 60.0)),
                       ),
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Column(
-                          mainAxisSize: MainAxisSize.max,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Align(
-                              alignment: const AlignmentDirectional(0.0, -1.0),
-                              child: Padding(
-                                padding: const EdgeInsetsDirectional.fromSTEB(
-                                    0.0, 10.0, 0.0, 20.0),
-                                child: Container(
-                                  width: 30.0,
-                                  height: 5.0,
-                                  decoration: BoxDecoration(
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    borderRadius: BorderRadius.circular(16.0),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  16.0, 0.0, 16.0, 10.0),
-                              child: Container(
-                                width: 100.0,
-                                height: 42.0,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF7F8F9),
-                                  borderRadius: BorderRadius.circular(12.0),
-                                  border: Border.all(
-                                    color: const Color(0xFFD5DDE0),
-                                  ),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsetsDirectional.fromSTEB(
-                                      15.0, 0.0, 15.0, 0.0),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: [
-                                      Text(
-                                        FFLocalizations.of(context).getText(
-                                          'ho8kca2q' /* A */,
-                                        ),
-                                        style: FlutterFlowTheme.of(context)
-                                            .labelLarge
-                                            .override(
-                                              fontFamily: 'Inter',
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primary,
-                                              letterSpacing: 0.0,
-                                            ),
-                                      ),
-                                      Expanded(
-                                        child: Text(
-                                          valueOrDefault<String>(
-                                            widget.foundRide?.fromLoc,
-                                            'from',
-                                          ),
-                                          style: FlutterFlowTheme.of(context)
-                                              .bodyMedium
-                                              .override(
-                                                fontFamily: 'Inter',
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .primaryText,
-                                                fontSize: 14.0,
-                                                letterSpacing: 0.0,
-                                              ),
-                                        ),
-                                      ),
-                                    ].divide(const SizedBox(width: 10.0)),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  16.0, 0.0, 16.0, 0.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  if (_model.awaiting == false)
-                                    Expanded(
-                                      child: FFButtonWidget(
-                                        onPressed: () async {
-                                          currentUserLocationValue =
-                                              await getCurrentUserLocation(
-                                                  defaultLocation:
-                                                      const LatLng(0.0, 0.0));
-                                          _model.awaiting = true;
-                                          setState(() {});
-
-                                          await widget.foundRide!.reference
-                                              .update(createRidesRecordData(
-                                            status: 2,
-                                            pickedUpAt: getCurrentTimestamp,
-                                            latlng: currentUserLocationValue,
-                                          ));
-                                        },
-                                        text:
-                                            FFLocalizations.of(context).getText(
-                                          'jcvxxymr' /* Жду пассажира */,
-                                        ),
-                                        options: FFButtonOptions(
-                                          height: 40.0,
-                                          padding:
-                                              const EdgeInsetsDirectional.fromSTEB(
-                                                  24.0, 0.0, 24.0, 0.0),
-                                          iconPadding:
-                                              const EdgeInsetsDirectional.fromSTEB(
-                                                  0.0, 0.0, 0.0, 0.0),
-                                          color: FlutterFlowTheme.of(context)
-                                              .primary,
-                                          textStyle:
-                                              FlutterFlowTheme.of(context)
-                                                  .titleSmall
-                                                  .override(
-                                                    fontFamily: 'Inter',
-                                                    color: Colors.white,
-                                                    letterSpacing: 0.0,
-                                                  ),
-                                          elevation: 0.0,
-                                          borderSide: const BorderSide(
-                                            color: Colors.transparent,
-                                            width: 1.0,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                        ),
-                                      ),
-                                    ),
-                                  if (_model.awaiting == true)
-                                    Expanded(
-                                      child: FFButtonWidget(
-                                        onPressed: () async {
-                                          context.goNamed(
-                                            'Driver4',
-                                            queryParameters: {
-                                              'foundRide': serializeParam(
-                                                widget.foundRide?.reference,
-                                                ParamType.DocumentReference,
-                                              ),
-                                            }.withoutNulls,
-                                          );
-                                        },
-                                        text:
-                                            FFLocalizations.of(context).getText(
-                                          'v2evww1c' /* Забрал пассажира */,
-                                        ),
-                                        options: FFButtonOptions(
-                                          height: 40.0,
-                                          padding:
-                                              const EdgeInsetsDirectional.fromSTEB(
-                                                  24.0, 0.0, 24.0, 0.0),
-                                          iconPadding:
-                                              const EdgeInsetsDirectional.fromSTEB(
-                                                  0.0, 0.0, 0.0, 0.0),
-                                          color: FlutterFlowTheme.of(context)
-                                              .primary,
-                                          textStyle:
-                                              FlutterFlowTheme.of(context)
-                                                  .titleSmall
-                                                  .override(
-                                                    fontFamily: 'Inter',
-                                                    color: Colors.white,
-                                                    letterSpacing: 0.0,
-                                                  ),
-                                          elevation: 0.0,
-                                          borderSide: const BorderSide(
-                                            color: Colors.transparent,
-                                            width: 1.0,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                        ),
-                                      ),
-                                    ),
-                                ].divide(const SizedBox(width: 10.0)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ].addToEnd(const SizedBox(height: 60.0)),
-                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );

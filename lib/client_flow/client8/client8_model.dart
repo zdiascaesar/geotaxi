@@ -7,10 +7,6 @@ class Client8Model extends FlutterFlowModel<Client8Widget> {
 
   String? checkedIssue;
 
-  ///  State fields for stateful widgets in this page.
-
-  final unfocusNode = FocusNode();
-
   @override
   void initState(BuildContext context) {}
 

@@ -35,6 +35,21 @@ class CarRecord extends FirestoreRecord {
   String get license => _license ?? '';
   bool hasLicense() => _license != null;
 
+  // "car_class" field.
+  String? _carClass;
+  String get carClass => _carClass ?? '';
+  bool hasCarClass() => _carClass != null;
+
+  // "car_year" field.
+  int? _carYear;
+  int get carYear => _carYear ?? 0;
+  bool hasCarYear() => _carYear != null;
+
+  // "status" field.
+  int? _status;
+  int get status => _status ?? 0;
+  bool hasStatus() => _status != null;
+
   DocumentReference get parentReference => reference.parent.parent!;
 
   void _initializeFields() {
@@ -42,6 +57,9 @@ class CarRecord extends FirestoreRecord {
     _model = snapshotData['model'] as String?;
     _plate = snapshotData['plate'] as String?;
     _license = snapshotData['license'] as String?;
+    _carClass = snapshotData['car_class'] as String?;
+    _carYear = castToType<int>(snapshotData['car_year']);
+    _status = castToType<int>(snapshotData['status']);
   }
 
   static Query<Map<String, dynamic>> collection([DocumentReference? parent]) =>
@@ -87,6 +105,9 @@ Map<String, dynamic> createCarRecordData({
   String? model,
   String? plate,
   String? license,
+  String? carClass,
+  int? carYear,
+  int? status,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -94,6 +115,9 @@ Map<String, dynamic> createCarRecordData({
       'model': model,
       'plate': plate,
       'license': license,
+      'car_class': carClass,
+      'car_year': carYear,
+      'status': status,
     }.withoutNulls,
   );
 
@@ -108,12 +132,22 @@ class CarRecordDocumentEquality implements Equality<CarRecord> {
     return e1?.brand == e2?.brand &&
         e1?.model == e2?.model &&
         e1?.plate == e2?.plate &&
-        e1?.license == e2?.license;
+        e1?.license == e2?.license &&
+        e1?.carClass == e2?.carClass &&
+        e1?.carYear == e2?.carYear &&
+        e1?.status == e2?.status;
   }
 
   @override
-  int hash(CarRecord? e) =>
-      const ListEquality().hash([e?.brand, e?.model, e?.plate, e?.license]);
+  int hash(CarRecord? e) => const ListEquality().hash([
+        e?.brand,
+        e?.model,
+        e?.plate,
+        e?.license,
+        e?.carClass,
+        e?.carYear,
+        e?.status
+      ]);
 
   @override
   bool isValidKey(Object? o) => o is CarRecord;

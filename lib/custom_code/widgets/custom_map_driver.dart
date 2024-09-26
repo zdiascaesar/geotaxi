@@ -40,7 +40,8 @@ class CustomMapDriver extends StatefulWidget {
 class _CustomMapDriverState extends State<CustomMapDriver> {
   List<latlong2.LatLng> routePoints = [];
   String eta = '';
-  latlong2.LatLng? mapCenter;
+  latlong2.LatLng mapCenter = latlong2.LatLng(55.755826, 37.6172999);
+  final MapController mapController = MapController();
 
   @override
   void initState() {
@@ -49,35 +50,60 @@ class _CustomMapDriverState extends State<CustomMapDriver> {
   }
 
   void _initializeMap() {
-    if (widget.fromWhere != null) {
+    if (widget.isStartFromDriver &&
+        widget.fromWhere != null &&
+        (widget.fromWhere!.latitude != 0 || widget.fromWhere!.longitude != 0)) {
       mapCenter = latlong2.LatLng(
           widget.fromWhere!.latitude, widget.fromWhere!.longitude);
     } else if (widget.toWhere != null) {
       mapCenter =
           latlong2.LatLng(widget.toWhere!.latitude, widget.toWhere!.longitude);
     } else {
-      // Установите значение по умолчанию, например, центр вашего города
-      mapCenter = latlong2.LatLng(55.7558, 37.6173); // Москва
+      // Задайте координаты по умолчанию
+      mapCenter = latlong2.LatLng(55.755826, 37.6172999); // Москва
     }
     _fetchRoute();
   }
 
+  void _centerOnFromLocation() async {
+    // Проверяем доступ к местоположению и статус GPS
+    bool hasLocationAccess = await chekLocation(context);
+
+    if (hasLocationAccess) {
+      mapController.move(
+          latlong2.LatLng(
+              widget.fromWhere!.latitude, widget.fromWhere!.longitude),
+          15.0);
+    } else {
+      // Здесь можно обработать случай, когда доступ не предоставлен или GPS выключен
+      print("Access to location is denied or GPS is disabled.");
+    }
+  }
+
   Future<void> _fetchRoute() async {
-    if (widget.fromWhere == null || widget.toWhere == null) {
-      print('Start or end location is not set');
+    if (widget.toWhere == null ||
+        (widget.isStartFromDriver &&
+            (widget.fromWhere == null ||
+                (widget.fromWhere!.latitude == 0 &&
+                    widget.fromWhere!.longitude == 0)))) {
+      print('Start or end location is not set properly');
       return;
     }
 
     const accessToken =
         'pk.eyJ1IjoiNmVremhhbiIsImEiOiJjbHppM214dWswYjB1MmtzNDRsdno4ZmFxIn0.LVh6MJeD2z0AViZebxN1-A';
 
-    final start = latlong2.LatLng(
-        widget.fromWhere!.latitude, widget.fromWhere!.longitude);
-    final end =
-        latlong2.LatLng(widget.toWhere!.latitude, widget.toWhere!.longitude);
+    final start = widget.isStartFromDriver && widget.fromWhere != null
+        ? latlong2.LatLng(
+            widget.fromWhere!.latitude, widget.fromWhere!.longitude)
+        : latlong2.LatLng(widget.toWhere!.latitude, widget.toWhere!.longitude);
+    final end = widget.isStartFromDriver
+        ? latlong2.LatLng(widget.toWhere!.latitude, widget.toWhere!.longitude)
+        : latlong2.LatLng(
+            widget.fromWhere!.latitude, widget.fromWhere!.longitude);
 
     final url = Uri.parse(
-        'https://api.mapbox.com/directions/v5/mapbox/driving/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?geometries=geojson&access_token=$accessToken');
+        'https://api.mapbox.com/directions/v5/mapbox/driving/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?geometries=geojson&overview=full&access_token=$accessToken');
 
     try {
       final response = await http.get(url);
@@ -149,7 +175,7 @@ class _CustomMapDriverState extends State<CustomMapDriver> {
   String _formatDuration(double seconds) {
     final minutes = (seconds / 60).round();
     if (minutes < 60) {
-      return '$minutes мин';
+      return 'B: $minutes мин';
     } else {
       final hours = minutes ~/ 60;
       final remainingMinutes = minutes % 60;
@@ -179,18 +205,41 @@ class _CustomMapDriverState extends State<CustomMapDriver> {
             height: 40.0,
           );
 
-    final endIcon = Image.asset(
-      'assets/images/ic_dest.png',
-      width: 40.0,
-      height: 40.0,
+    final endIcon = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: FlutterFlowTheme.of(context).primary,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Text(
+            eta.isNotEmpty ? eta : '3 мин',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        SizedBox(height: 4),
+        Image.asset(
+          'assets/images/ic_dest.png',
+          width: 40,
+          height: 40,
+        ),
+      ],
     );
 
     return Scaffold(
       body: Stack(
         children: [
           FlutterMap(
+            mapController: mapController,
             options: MapOptions(
-              initialCenter: mapCenter ?? latlong2.LatLng(0, 0),
+              initialCenter: mapCenter!,
               initialZoom: 13.0,
               minZoom: 5,
               maxZoom: 18,
@@ -213,40 +262,37 @@ class _CustomMapDriverState extends State<CustomMapDriver> {
                 ),
               MarkerLayer(
                 markers: [
-                  if (startLocation != null)
+                  if (startLocation != null &&
+                      !(widget.isStartFromDriver &&
+                          widget.fromWhere!.latitude == 0 &&
+                          widget.fromWhere!.longitude == 0))
                     Marker(
                       point: startLocation,
                       child: startIcon,
                     ),
                   if (endLocation != null)
                     Marker(
+                      width: 80,
                       point: endLocation,
-                      child: Column(
-                        children: [
-                          if (eta.isNotEmpty)
-                            Container(
-                              padding: const EdgeInsets.all(4.0),
-                              decoration: BoxDecoration(
-                                color: FlutterFlowTheme.of(context).primary,
-                                borderRadius: BorderRadius.circular(25.0),
-                              ),
-                              child: Text(
-                                eta,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          endIcon,
-                        ],
-                      ),
+                      child: endIcon,
                     ),
                 ],
               ),
             ],
           ),
+          if (widget.isStartFromDriver)
+            Positioned(
+              right: 16,
+              bottom: 16,
+              child: FloatingActionButton(
+                onPressed: _centerOnFromLocation,
+                child: Icon(
+                  Icons.my_location,
+                  color: Colors.white,
+                ),
+                backgroundColor: FlutterFlowTheme.of(context).primary,
+              ),
+            ),
         ],
       ),
     );

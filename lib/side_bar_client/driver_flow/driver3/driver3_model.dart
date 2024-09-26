@@ -13,7 +13,6 @@ class Driver3Model extends FlutterFlowModel<Driver3Widget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   RidesRecord? driver3PreviousSnapshot;
   // Stores action output result for [Firestore Query - Query a collection] action in Driver3 widget.
   RidesRecord? cancelledRide;

@@ -75,6 +75,46 @@ class UsersRecord extends FirestoreRecord {
   bool get readyForWork => _readyForWork ?? false;
   bool hasReadyForWork() => _readyForWork != null;
 
+  // "is_deleted" field.
+  bool? _isDeleted;
+  bool get isDeleted => _isDeleted ?? false;
+  bool hasIsDeleted() => _isDeleted != null;
+
+  // "driver_type" field.
+  int? _driverType;
+  int get driverType => _driverType ?? 0;
+  bool hasDriverType() => _driverType != null;
+
+  // "full_registration_completed" field.
+  bool? _fullRegistrationCompleted;
+  bool get fullRegistrationCompleted => _fullRegistrationCompleted ?? false;
+  bool hasFullRegistrationCompleted() => _fullRegistrationCompleted != null;
+
+  // "driver_location" field.
+  LatLng? _driverLocation;
+  LatLng? get driverLocation => _driverLocation;
+  bool hasDriverLocation() => _driverLocation != null;
+
+  // "inprogress" field.
+  bool? _inprogress;
+  bool get inprogress => _inprogress ?? false;
+  bool hasInprogress() => _inprogress != null;
+
+  // "amount_of_rates" field.
+  int? _amountOfRates;
+  int get amountOfRates => _amountOfRates ?? 0;
+  bool hasAmountOfRates() => _amountOfRates != null;
+
+  // "total_rate" field.
+  double? _totalRate;
+  double get totalRate => _totalRate ?? 0.0;
+  bool hasTotalRate() => _totalRate != null;
+
+  // "dismissed_rides" field.
+  List<DocumentReference>? _dismissedRides;
+  List<DocumentReference> get dismissedRides => _dismissedRides ?? const [];
+  bool hasDismissedRides() => _dismissedRides != null;
+
   void _initializeFields() {
     _email = snapshotData['email'] as String?;
     _displayName = snapshotData['display_name'] as String?;
@@ -88,6 +128,15 @@ class UsersRecord extends FirestoreRecord {
     _location = snapshotData['location'] as LatLng?;
     _balance = castToType<double>(snapshotData['balance']);
     _readyForWork = snapshotData['ready_for_work'] as bool?;
+    _isDeleted = snapshotData['is_deleted'] as bool?;
+    _driverType = castToType<int>(snapshotData['driver_type']);
+    _fullRegistrationCompleted =
+        snapshotData['full_registration_completed'] as bool?;
+    _driverLocation = snapshotData['driver_location'] as LatLng?;
+    _inprogress = snapshotData['inprogress'] as bool?;
+    _amountOfRates = castToType<int>(snapshotData['amount_of_rates']);
+    _totalRate = castToType<double>(snapshotData['total_rate']);
+    _dismissedRides = getDataList(snapshotData['dismissed_rides']);
   }
 
   static CollectionReference get collection =>
@@ -136,6 +185,13 @@ Map<String, dynamic> createUsersRecordData({
   LatLng? location,
   double? balance,
   bool? readyForWork,
+  bool? isDeleted,
+  int? driverType,
+  bool? fullRegistrationCompleted,
+  LatLng? driverLocation,
+  bool? inprogress,
+  int? amountOfRates,
+  double? totalRate,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -151,6 +207,13 @@ Map<String, dynamic> createUsersRecordData({
       'location': location,
       'balance': balance,
       'ready_for_work': readyForWork,
+      'is_deleted': isDeleted,
+      'driver_type': driverType,
+      'full_registration_completed': fullRegistrationCompleted,
+      'driver_location': driverLocation,
+      'inprogress': inprogress,
+      'amount_of_rates': amountOfRates,
+      'total_rate': totalRate,
     }.withoutNulls,
   );
 
@@ -162,6 +225,7 @@ class UsersRecordDocumentEquality implements Equality<UsersRecord> {
 
   @override
   bool equals(UsersRecord? e1, UsersRecord? e2) {
+    const listEquality = ListEquality();
     return e1?.email == e2?.email &&
         e1?.displayName == e2?.displayName &&
         e1?.photoUrl == e2?.photoUrl &&
@@ -173,7 +237,15 @@ class UsersRecordDocumentEquality implements Equality<UsersRecord> {
         e1?.rating == e2?.rating &&
         e1?.location == e2?.location &&
         e1?.balance == e2?.balance &&
-        e1?.readyForWork == e2?.readyForWork;
+        e1?.readyForWork == e2?.readyForWork &&
+        e1?.isDeleted == e2?.isDeleted &&
+        e1?.driverType == e2?.driverType &&
+        e1?.fullRegistrationCompleted == e2?.fullRegistrationCompleted &&
+        e1?.driverLocation == e2?.driverLocation &&
+        e1?.inprogress == e2?.inprogress &&
+        e1?.amountOfRates == e2?.amountOfRates &&
+        e1?.totalRate == e2?.totalRate &&
+        listEquality.equals(e1?.dismissedRides, e2?.dismissedRides);
   }
 
   @override
@@ -189,7 +261,15 @@ class UsersRecordDocumentEquality implements Equality<UsersRecord> {
         e?.rating,
         e?.location,
         e?.balance,
-        e?.readyForWork
+        e?.readyForWork,
+        e?.isDeleted,
+        e?.driverType,
+        e?.fullRegistrationCompleted,
+        e?.driverLocation,
+        e?.inprogress,
+        e?.amountOfRates,
+        e?.totalRate,
+        e?.dismissedRides
       ]);
 
   @override

@@ -7,7 +7,6 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 class CarAccidentPageModel extends FlutterFlowModel<CarAccidentPageWidget> {
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // State field(s) for TextField widget.
   FocusNode? textFieldFocusNode1;
   TextEditingController? textController1;

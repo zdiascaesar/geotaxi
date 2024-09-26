@@ -12,52 +12,50 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 Future<bool> chekLocationPermission(BuildContext context) async {
-  var status = await Permission.location.request();
+  var status = await Permission.location.status;
 
-  if (status.isGranted) {
-    return true;
-  }
-
-  if (status.isDenied || status.isPermanentlyDenied) {
+  while (!status.isGranted) {
     await showDialog(
+      barrierDismissible:
+          false, // Prevents dismissing the dialog by tapping outside
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Color(0xFF141414),
-          title: Text(
-            'Access to locations',
-            style: TextStyle(color: Color(0xFFFAFAFA)),
-          ),
-          content: Text(
-            'To use the map, you must provide access to the location. Please allow access in settings.',
-            style: TextStyle(color: Color(0xFFFAFAFA)),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                'No, thanks',
-                style: TextStyle(color: Color(0xFFFAFAFA)),
-              ),
+        return WillPopScope(
+          // Prevents dismissing the dialog by pressing the back button
+          onWillPop: () async => false,
+          child: AlertDialog(
+            backgroundColor: Color(0xFF141414),
+            title: Text(
+              'Access to Location',
+              style: TextStyle(color: Color(0xFFFAFAFA)),
             ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                await openAppSettings();
-              },
-              child: Text(
-                'Ok',
-                style: TextStyle(color: Color(0xFFFAFAFA)),
-              ),
+            content: Text(
+              'To use the app, you must provide access to your location. Please allow access in settings.',
+              style: TextStyle(color: Color(0xFFFAFAFA)),
             ),
-          ],
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  await openAppSettings();
+                  // Wait for the user to return from settings
+                  await Future.delayed(Duration(seconds: 2));
+                  status = await Permission.location.status;
+                  if (status.isGranted) {
+                    Navigator.of(context).pop(); // Close the dialog
+                  }
+                },
+                child: Text(
+                  'Open Settings',
+                  style: TextStyle(color: Color(0xFFFAFAFA)),
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
-    return false;
+    status = await Permission.location.status;
   }
 
-  return false;
+  return true;
 }

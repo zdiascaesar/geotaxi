@@ -34,7 +34,7 @@ class _Client6WidgetState extends State<Client6Widget> {
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      await showModalBottomSheet(
+      showModalBottomSheet(
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
         isDismissible: false,
@@ -55,7 +55,7 @@ class _Client6WidgetState extends State<Client6Widget> {
     });
 
     getCurrentUserLocation(defaultLocation: const LatLng(0.0, 0.0), cached: true)
-        .then((loc) => setState(() => currentUserLocationValue = loc));
+        .then((loc) => safeSetState(() => currentUserLocationValue = loc));
   }
 
   @override
@@ -85,27 +85,30 @@ class _Client6WidgetState extends State<Client6Widget> {
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        key: scaffoldKey,
-        resizeToAvoidBottomInset: false,
-        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-        body: FlutterFlowGoogleMap(
-          controller: _model.googleMapsController,
-          onCameraIdle: (latLng) => _model.googleMapsCenter = latLng,
-          initialLocation: _model.googleMapsCenter ??=
-              currentUserLocationValue!,
-          markerColor: GoogleMarkerColor.violet,
-          mapType: MapType.normal,
-          style: GoogleMapStyle.silver,
-          initialZoom: 14.0,
-          allowInteraction: false,
-          allowZoom: false,
-          showZoomControls: true,
-          showLocation: false,
-          showCompass: false,
-          showMapToolbar: false,
-          showTraffic: false,
-          centerMapOnMarkerTap: false,
+      child: WillPopScope(
+        onWillPop: () async => false,
+        child: Scaffold(
+          key: scaffoldKey,
+          resizeToAvoidBottomInset: false,
+          backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+          body: FlutterFlowGoogleMap(
+            controller: _model.googleMapsController,
+            onCameraIdle: (latLng) => _model.googleMapsCenter = latLng,
+            initialLocation: _model.googleMapsCenter ??=
+                currentUserLocationValue!,
+            markerColor: GoogleMarkerColor.violet,
+            mapType: MapType.normal,
+            style: GoogleMapStyle.silver,
+            initialZoom: 14.0,
+            allowInteraction: false,
+            allowZoom: false,
+            showZoomControls: true,
+            showLocation: false,
+            showCompass: false,
+            showMapToolbar: false,
+            showTraffic: false,
+            centerMapOnMarkerTap: false,
+          ),
         ),
       ),
     );

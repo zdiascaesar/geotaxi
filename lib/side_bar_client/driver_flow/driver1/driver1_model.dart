@@ -8,9 +8,18 @@ class Driver1Model extends FlutterFlowModel<Driver1Widget> {
 
   int? freeRides = 0;
 
+  List<String> dismissedRides = [];
+  void addToDismissedRides(String item) => dismissedRides.add(item);
+  void removeFromDismissedRides(String item) => dismissedRides.remove(item);
+  void removeAtIndexFromDismissedRides(int index) =>
+      dismissedRides.removeAt(index);
+  void insertAtIndexInDismissedRides(int index, String item) =>
+      dismissedRides.insert(index, item);
+  void updateDismissedRidesAtIndex(int index, Function(String) updateFn) =>
+      dismissedRides[index] = updateFn(dismissedRides[index]);
+
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // Stores action output result for [Firestore Query - Query a collection] action in Driver1 widget.
   List<RidesRecord>? foundRides;
 

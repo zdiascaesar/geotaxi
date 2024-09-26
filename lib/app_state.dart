@@ -36,6 +36,10 @@ class FFAppState extends ChangeNotifier {
               .toList() ??
           _history;
     });
+    _safeInit(() {
+      _initialMap =
+          latLngFromString(prefs.getString('ff_initialMap')) ?? _initialMap;
+    });
   }
 
   void update(VoidCallback callback) {
@@ -114,6 +118,21 @@ class FFAppState extends ChangeNotifier {
     history.insert(index, value);
     prefs.setStringList(
         'ff_history', _history.map((x) => x.serialize()).toList());
+  }
+
+  LatLng? _initialMap = const LatLng(55.755826, 37.6173);
+  LatLng? get initialMap => _initialMap;
+  set initialMap(LatLng? value) {
+    _initialMap = value;
+    value != null
+        ? prefs.setString('ff_initialMap', value.serialize())
+        : prefs.remove('ff_initialMap');
+  }
+
+  LatLng? _currentDeviceLocation = const LatLng(55.755826, 37.6173);
+  LatLng? get currentDeviceLocation => _currentDeviceLocation;
+  set currentDeviceLocation(LatLng? value) {
+    _currentDeviceLocation = value;
   }
 }
 

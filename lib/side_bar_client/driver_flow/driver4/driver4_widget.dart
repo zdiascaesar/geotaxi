@@ -29,6 +29,7 @@ class _Driver4WidgetState extends State<Driver4Widget> {
   late Driver4Model _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  LatLng? currentUserLocationValue;
 
   @override
   void initState() {
@@ -88,208 +89,220 @@ class _Driver4WidgetState extends State<Driver4Widget> {
 
         return GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
-          child: Scaffold(
-            key: scaffoldKey,
-            backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-            drawer: Drawer(
-              elevation: 16.0,
-              child: wrapWithModel(
-                model: _model.sideBarModel,
-                updateCallback: () => setState(() {}),
-                child: SideBarWidget(
-                  action: () async {},
+          child: WillPopScope(
+            onWillPop: () async => false,
+            child: Scaffold(
+              key: scaffoldKey,
+              backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+              drawer: Drawer(
+                elevation: 16.0,
+                child: wrapWithModel(
+                  model: _model.sideBarModel,
+                  updateCallback: () => safeSetState(() {}),
+                  child: SideBarWidget(
+                    action: () async {},
+                  ),
                 ),
               ),
-            ),
-            appBar: AppBar(
-              backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
-              automaticallyImplyLeading: false,
-              leading: FlutterFlowIconButton(
-                borderColor: Colors.transparent,
-                borderRadius: 30.0,
-                borderWidth: 1.0,
-                buttonSize: 54.0,
-                icon: const Icon(
-                  FFIcons.kline3horizontal,
-                  color: Color(0xFF1C1C1E),
-                  size: 24.0,
+              appBar: AppBar(
+                backgroundColor:
+                    FlutterFlowTheme.of(context).secondaryBackground,
+                automaticallyImplyLeading: false,
+                leading: FlutterFlowIconButton(
+                  borderColor: Colors.transparent,
+                  borderRadius: 30.0,
+                  borderWidth: 1.0,
+                  buttonSize: 54.0,
+                  icon: const Icon(
+                    FFIcons.kline3horizontal,
+                    color: Color(0xFF1C1C1E),
+                    size: 24.0,
+                  ),
+                  onPressed: () async {
+                    scaffoldKey.currentState!.openDrawer();
+                  },
                 ),
-                onPressed: () async {
-                  scaffoldKey.currentState!.openDrawer();
-                },
+                actions: const [],
+                centerTitle: true,
+                elevation: 0.5,
               ),
-              actions: const [],
-              centerTitle: true,
-              elevation: 0.5,
-            ),
-            body: SizedBox(
-              width: double.infinity,
-              child: Stack(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    height: double.infinity,
-                    child: custom_widgets.CustomMapDriver(
+              body: SizedBox(
+                width: double.infinity,
+                child: Stack(
+                  children: [
+                    SizedBox(
                       width: double.infinity,
                       height: double.infinity,
-                      isStartFromDriver: true,
-                      fromWhere: driver4RidesRecord.fromLocation,
-                      toWhere: driver4RidesRecord.toLocation,
-                    ),
-                  ),
-                  Align(
-                    alignment: const AlignmentDirectional(0.0, 1.0),
-                    child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: FlutterFlowTheme.of(context).secondaryBackground,
-                        boxShadow: const [
-                          BoxShadow(
-                            blurRadius: 4.0,
-                            color: Color(0x33000000),
-                            offset: Offset(
-                              2.0,
-                              0.0,
-                            ),
-                            spreadRadius: 4.0,
-                          )
-                        ],
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(0.0),
-                          bottomRight: Radius.circular(0.0),
-                          topLeft: Radius.circular(16.0),
-                          topRight: Radius.circular(16.0),
-                        ),
+                      child: custom_widgets.CustomMapDriver(
+                        width: double.infinity,
+                        height: double.infinity,
+                        isStartFromDriver: true,
+                        fromWhere: driver4RidesRecord.fromLocation,
+                        toWhere: driver4RidesRecord.toLocation,
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Align(
-                            alignment: const AlignmentDirectional(0.0, -1.0),
-                            child: Padding(
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  0.0, 10.0, 0.0, 20.0),
-                              child: Container(
-                                width: 30.0,
-                                height: 5.0,
-                                decoration: BoxDecoration(
-                                  color: FlutterFlowTheme.of(context).primary,
-                                  borderRadius: BorderRadius.circular(16.0),
-                                ),
+                    ),
+                    Align(
+                      alignment: const AlignmentDirectional(0.0, 1.0),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color:
+                              FlutterFlowTheme.of(context).secondaryBackground,
+                          boxShadow: const [
+                            BoxShadow(
+                              blurRadius: 4.0,
+                              color: Color(0x33000000),
+                              offset: Offset(
+                                2.0,
+                                0.0,
                               ),
-                            ),
+                              spreadRadius: 4.0,
+                            )
+                          ],
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(0.0),
+                            bottomRight: Radius.circular(0.0),
+                            topLeft: Radius.circular(16.0),
+                            topRight: Radius.circular(16.0),
                           ),
-                          Padding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(
-                                16.0, 0.0, 16.0, 10.0),
-                            child: Container(
-                              width: 100.0,
-                              height: 42.0,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF7F8F9),
-                                borderRadius: BorderRadius.circular(12.0),
-                                border: Border.all(
-                                  color: const Color(0xFFD5DDE0),
-                                ),
-                              ),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Align(
+                              alignment: const AlignmentDirectional(0.0, -1.0),
                               child: Padding(
                                 padding: const EdgeInsetsDirectional.fromSTEB(
-                                    15.0, 0.0, 15.0, 0.0),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Text(
-                                      FFLocalizations.of(context).getText(
-                                        'jbz8moic' /* B */,
-                                      ),
-                                      style: FlutterFlowTheme.of(context)
-                                          .labelLarge
-                                          .override(
-                                            fontFamily: 'Inter',
-                                            color: FlutterFlowTheme.of(context)
-                                                .primary,
-                                            letterSpacing: 0.0,
-                                          ),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        driver4RidesRecord.toLoc,
+                                    0.0, 10.0, 0.0, 20.0),
+                                child: Container(
+                                  width: 30.0,
+                                  height: 5.0,
+                                  decoration: BoxDecoration(
+                                    color: FlutterFlowTheme.of(context).primary,
+                                    borderRadius: BorderRadius.circular(16.0),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                  16.0, 0.0, 16.0, 10.0),
+                              child: Container(
+                                width: 100.0,
+                                height: 42.0,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF7F8F9),
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  border: Border.all(
+                                    color: const Color(0xFFD5DDE0),
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
+                                      15.0, 0.0, 15.0, 0.0),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      Text(
+                                        FFLocalizations.of(context).getText(
+                                          'jbz8moic' /* B */,
+                                        ),
                                         style: FlutterFlowTheme.of(context)
-                                            .bodyMedium
+                                            .labelLarge
                                             .override(
                                               fontFamily: 'Inter',
                                               color:
                                                   FlutterFlowTheme.of(context)
-                                                      .primaryText,
-                                              fontSize: 14.0,
+                                                      .primary,
                                               letterSpacing: 0.0,
                                             ),
                                       ),
-                                    ),
-                                  ].divide(const SizedBox(width: 10.0)),
+                                      Expanded(
+                                        child: Text(
+                                          driver4RidesRecord.toLoc,
+                                          style: FlutterFlowTheme.of(context)
+                                              .bodyMedium
+                                              .override(
+                                                fontFamily: 'Inter',
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primaryText,
+                                                fontSize: 14.0,
+                                                letterSpacing: 0.0,
+                                              ),
+                                        ),
+                                      ),
+                                    ].divide(const SizedBox(width: 10.0)),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(
-                                16.0, 0.0, 16.0, 0.0),
-                            child: FFButtonWidget(
-                              onPressed: () async {
-                                await widget.foundRide!
-                                    .update(createRidesRecordData(
-                                  status: 3,
-                                  droppedOffAt: getCurrentTimestamp,
-                                  finished: true,
-                                ));
+                            Padding(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                  16.0, 0.0, 16.0, 0.0),
+                              child: FFButtonWidget(
+                                onPressed: () async {
+                                  currentUserLocationValue =
+                                      await getCurrentUserLocation(
+                                          defaultLocation: const LatLng(0.0, 0.0));
 
-                                await currentUserReference!
-                                    .update(createUsersRecordData(
-                                  readyForWork: true,
-                                ));
+                                  await widget.foundRide!
+                                      .update(createRidesRecordData(
+                                    status: 3,
+                                    droppedOffAt: getCurrentTimestamp,
+                                    finished: true,
+                                  ));
 
-                                context.goNamed(
-                                  'Client5',
-                                  queryParameters: {
-                                    'ridePayment': serializeParam(
-                                      widget.foundRide,
-                                      ParamType.DocumentReference,
-                                    ),
-                                  }.withoutNulls,
-                                );
-                              },
-                              text: FFLocalizations.of(context).getText(
-                                'msf9fww1' /* Завершить заказ */,
-                              ),
-                              options: FFButtonOptions(
-                                height: 40.0,
-                                padding: const EdgeInsetsDirectional.fromSTEB(
-                                    24.0, 0.0, 24.0, 0.0),
-                                iconPadding: const EdgeInsetsDirectional.fromSTEB(
-                                    0.0, 0.0, 0.0, 0.0),
-                                color: FlutterFlowTheme.of(context).primary,
-                                textStyle: FlutterFlowTheme.of(context)
-                                    .titleSmall
-                                    .override(
-                                      fontFamily: 'Inter',
-                                      color: Colors.white,
-                                      letterSpacing: 0.0,
-                                    ),
-                                elevation: 0.0,
-                                borderSide: const BorderSide(
-                                  color: Colors.transparent,
-                                  width: 1.0,
+                                  await currentUserReference!
+                                      .update(createUsersRecordData(
+                                    readyForWork: true,
+                                    driverLocation: currentUserLocationValue,
+                                    inprogress: false,
+                                  ));
+
+                                  context.goNamed(
+                                    'Client5',
+                                    queryParameters: {
+                                      'ridePayment': serializeParam(
+                                        widget.foundRide,
+                                        ParamType.DocumentReference,
+                                      ),
+                                    }.withoutNulls,
+                                  );
+                                },
+                                text: FFLocalizations.of(context).getText(
+                                  'msf9fww1' /* Завершить заказ */,
                                 ),
-                                borderRadius: BorderRadius.circular(8.0),
+                                options: FFButtonOptions(
+                                  height: 40.0,
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
+                                      24.0, 0.0, 24.0, 0.0),
+                                  iconPadding: const EdgeInsetsDirectional.fromSTEB(
+                                      0.0, 0.0, 0.0, 0.0),
+                                  color: FlutterFlowTheme.of(context).primary,
+                                  textStyle: FlutterFlowTheme.of(context)
+                                      .titleSmall
+                                      .override(
+                                        fontFamily: 'Inter',
+                                        color: Colors.white,
+                                        letterSpacing: 0.0,
+                                      ),
+                                  elevation: 0.0,
+                                  borderSide: const BorderSide(
+                                    color: Colors.transparent,
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
                               ),
                             ),
-                          ),
-                        ].addToEnd(const SizedBox(height: 60.0)),
+                          ].addToEnd(const SizedBox(height: 60.0)),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

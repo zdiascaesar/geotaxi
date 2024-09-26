@@ -5,10 +5,6 @@ import 'package:flutter/material.dart';
 
 class SupportRequestsPageCopyModel
     extends FlutterFlowModel<SupportRequestsPageCopyWidget> {
-  ///  State fields for stateful widgets in this page.
-
-  final unfocusNode = FocusNode();
-
   @override
   void initState(BuildContext context) {}
 

@@ -2,7 +2,7 @@ import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import '/flutter_flow/custom_functions.dart' as functions;
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -211,15 +211,9 @@ class _LeaveReviewComponentWidgetState
 
                                             return Text(
                                               valueOrDefault<String>(
-                                                functions
-                                                    .avgRating(
-                                                        textReviewsRecordList
-                                                            .length
-                                                            .toDouble(),
-                                                        containerUsersRecord
-                                                            .rating)
+                                                containerUsersRecord.rating
                                                     .toString(),
-                                                '0.0',
+                                                '5.0',
                                               ).maybeHandleOverflow(
                                                   maxChars: 3),
                                               maxLines: 1,
@@ -276,7 +270,7 @@ class _LeaveReviewComponentWidgetState
                     alignment: const AlignmentDirectional(0.0, -1.0),
                     child: RatingBar.builder(
                       onRatingUpdate: (newValue) =>
-                          setState(() => _model.ratingBarValue = newValue),
+                          safeSetState(() => _model.ratingBarValue = newValue),
                       itemBuilder: (context, index) => FaIcon(
                         FontAwesomeIcons.solidStar,
                         color: FlutterFlowTheme.of(context).primary,
@@ -380,20 +374,28 @@ class _LeaveReviewComponentWidgetState
                                         rating: _model.ratingBarValue,
                                       ),
                                       reviewsRecordReference);
-
-                              await containerUsersRecord.reference.update({
-                                ...mapToFirestore(
-                                  {
-                                    'rating': FieldValue.increment(
-                                        _model.ratingBarValue!),
-                                  },
-                                ),
-                              });
-                              Navigator.pop(context);
+                              unawaited(
+                                () async {
+                                  await containerUsersRecord.reference.update({
+                                    ...mapToFirestore(
+                                      {
+                                        'rating': FieldValue.increment(
+                                            _model.ratingBarValue!),
+                                        'amount_of_rates':
+                                            FieldValue.increment(1),
+                                        'total_rate': FieldValue.increment(
+                                            _model.ratingBarValue!),
+                                      },
+                                    ),
+                                  });
+                                }(),
+                              );
 
                               context.goNamed('HomePage');
 
-                              setState(() {});
+                              Navigator.pop(context);
+
+                              safeSetState(() {});
                             },
                             text: FFLocalizations.of(context).getText(
                               'j9ngoxm8' /* Оценить поездку */,

@@ -2,18 +2,23 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{document} {
-      allow create: if request.auth.uid == document;
+      allow create: if true;
       allow read: if true;
-      allow write: if request.auth.uid == document;
-      allow delete: if request.auth.uid == document;
+      allow write: if true;
+      allow delete: if true;
     }
 
     match /users/{parent}/car/{document} {
-      allow create: if request.auth.uid == parent;
+      allow create: if true;
       allow read: if true;
-      allow write: if request.auth.uid == parent;
-      allow delete: if request.auth.uid == parent;
+      allow write: if true;
+      allow delete: if true;
     }
+
+    match /{path=**}/car/{document} {
+      allow read: if true;
+    }
+
 
     match /rides/{document} {
       allow create: if true;
@@ -41,18 +46,11 @@ service cloud.firestore {
       allow delete: if true;
     }
 
-    match /drivers/{document} {
-      allow create: if true;
-      allow read: if true;
-      allow write: if true;
-      allow delete: if false;
-    }
-
     match /rides/{parent}/chat/{document} {
       allow create: if true;
       allow read: if true;
-      allow write: if false;
-      allow delete: if false;
+      allow write: if true;
+      allow delete: if true;
     }
 
     match /{path=**}/chat/{document} {
@@ -61,45 +59,75 @@ service cloud.firestore {
 
 
     match /users/{parent}/supportChat/{document} {
-      allow create: if request.auth.uid == parent;
+      allow create: if true;
       allow read: if true;
-      allow write: if request.auth.uid == parent;
-      allow delete: if request.auth.uid == parent;
+      allow write: if true;
+      allow delete: if true;
     }
+
+    match /{path=**}/supportChat/{document} {
+      allow read: if true;
+    }
+
 
     match /users/{parent}/notifications/{document} {
-      allow create: if request.auth.uid == parent;
+      allow create: if true;
       allow read: if true;
-      allow write: if request.auth.uid == parent;
-      allow delete: if request.auth.uid == parent;
+      allow write: if true;
+      allow delete: if true;
     }
+
+    match /{path=**}/notifications/{document} {
+      allow read: if true;
+    }
+
 
     match /users/{parent}/fundRequest/{document} {
-      allow create: if request.auth.uid == parent;
+      allow create: if true;
       allow read: if true;
-      allow write: if request.auth.uid == parent;
-      allow delete: if request.auth.uid == parent;
+      allow write: if true;
+      allow delete: if true;
     }
+
+    match /{path=**}/fundRequest/{document} {
+      allow read: if true;
+    }
+
 
     match /users/{parent}/requests/{document} {
-      allow create: if request.auth.uid == parent;
+      allow create: if true;
       allow read: if true;
-      allow write: if request.auth.uid == parent;
-      allow delete: if request.auth.uid == parent;
+      allow write: if true;
+      allow delete: if true;
     }
+
+    match /{path=**}/requests/{document} {
+      allow read: if true;
+    }
+
 
     match /users/{parent}/carAccident/{document} {
-      allow create: if request.auth.uid == parent;
+      allow create: if true;
       allow read: if true;
-      allow write: if request.auth.uid == parent;
-      allow delete: if request.auth.uid == parent;
+      allow write: if true;
+      allow delete: if true;
     }
 
-    match /users/{parent}/balace/{document} {
-      allow create: if request.auth.uid == parent;
+    match /{path=**}/carAccident/{document} {
       allow read: if true;
-      allow write: if request.auth.uid == parent;
-      allow delete: if request.auth.uid == parent;
     }
+
+
+    match /users/{parent}/balace/{document} {
+      allow create: if true;
+      allow read: if true;
+      allow write: if true;
+      allow delete: if true;
+    }
+
+    match /{path=**}/balace/{document} {
+      allow read: if true;
+    }
+
   }
 }

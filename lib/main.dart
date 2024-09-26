@@ -1,3 +1,4 @@
+import '/custom_code/actions/index.dart' as actions;
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
@@ -16,10 +17,18 @@ void main() async {
   usePathUrlStrategy();
   await initFirebase();
 
+  // Start initial custom actions code
+  await actions.userStatus();
+  // End initial custom actions code
+
   await FFLocalizations.initialize();
 
   final appState = FFAppState(); // Initialize FFAppState
   await appState.initializePersistedState();
+
+  // Start final custom actions code
+  await actions.setupAppCloseDetector();
+  // End final custom actions code
 
   runApp(ChangeNotifierProvider(
     create: (context) => appState,
@@ -75,11 +84,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   void setLocale(String language) {
-    setState(() => _locale = createLocale(language));
+    safeSetState(() => _locale = createLocale(language));
     FFLocalizations.storeLocale(language);
   }
 
-  void setThemeMode(ThemeMode mode) => setState(() {
+  void setThemeMode(ThemeMode mode) => safeSetState(() {
         _themeMode = mode;
       });
 

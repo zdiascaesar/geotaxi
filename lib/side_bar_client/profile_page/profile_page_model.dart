@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 class ProfilePageModel extends FlutterFlowModel<ProfilePageWidget> {
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // State field(s) for SwitchListTile widget.
   bool? switchListTileValue;
 

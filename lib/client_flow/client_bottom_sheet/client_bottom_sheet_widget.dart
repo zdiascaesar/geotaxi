@@ -8,6 +8,7 @@ import '/flutter_flow/flutter_flow_widgets.dart';
 import '/ride_flows/components/get_location/get_location_widget.dart';
 import '/ride_flows/map_from_page_component/map_from_page_component_widget.dart';
 import '/ride_flows/map_to_page_component/map_to_page_component_widget.dart';
+import '/custom_code/actions/index.dart' as actions;
 import '/flutter_flow/custom_functions.dart' as functions;
 import '/flutter_flow/permissions_util.dart';
 import 'package:easy_debounce/easy_debounce.dart';
@@ -165,7 +166,7 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                                   focusNode: _model.textFieldFocusNode1,
                                   onChanged: (_) => EasyDebounce.debounce(
                                     '_model.textController1',
-                                    const Duration(milliseconds: 2000),
+                                    const Duration(milliseconds: 200),
                                     () async {
                                       await Future.delayed(
                                           const Duration(milliseconds: 100));
@@ -177,9 +178,10 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                                       );
 
                                       _model.check = true;
-                                      setState(() {});
+                                      _model.isHiddenFrom = false;
+                                      safeSetState(() {});
 
-                                      setState(() {});
+                                      safeSetState(() {});
                                     },
                                   ),
                                   autofocus: false,
@@ -242,8 +244,12 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                                 hoverColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 onTap: () async {
-                                  if (await getPermissionStatus(
-                                      locationPermission)) {
+                                  var shouldSetState = false;
+                                  _model.location = await actions.chekLocation(
+                                    context,
+                                  );
+                                  shouldSetState = true;
+                                  if (_model.location!) {
                                     await showModalBottomSheet(
                                       isScrollControlled: true,
                                       backgroundColor: Colors.transparent,
@@ -262,7 +268,8 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                                     ).then((value) => safeSetState(
                                         () => _model.getFromAddress = value));
 
-                                    setState(() {
+                                    shouldSetState = true;
+                                    safeSetState(() {
                                       _model.textController1?.text =
                                           _model.getFromAddress!;
                                       _model.textController1?.selection =
@@ -271,25 +278,32 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                                                   .text.length);
                                     });
                                   } else {
-                                    await showModalBottomSheet(
-                                      isScrollControlled: true,
-                                      backgroundColor: Colors.transparent,
-                                      enableDrag: false,
-                                      context: context,
-                                      builder: (context) {
-                                        return Padding(
-                                          padding:
-                                              MediaQuery.viewInsetsOf(context),
-                                          child: const SizedBox(
-                                            height: double.infinity,
-                                            child: GetLocationWidget(),
-                                          ),
-                                        );
-                                      },
-                                    ).then((value) => safeSetState(() {}));
+                                    await requestPermission(locationPermission);
+                                    if (!(await getPermissionStatus(
+                                        locationPermission))) {
+                                      await showModalBottomSheet(
+                                        isScrollControlled: true,
+                                        backgroundColor: Colors.transparent,
+                                        enableDrag: false,
+                                        context: context,
+                                        builder: (context) {
+                                          return Padding(
+                                            padding: MediaQuery.viewInsetsOf(
+                                                context),
+                                            child: const SizedBox(
+                                              height: double.infinity,
+                                              child: GetLocationWidget(),
+                                            ),
+                                          );
+                                        },
+                                      ).then((value) => safeSetState(() {}));
+
+                                      if (shouldSetState) safeSetState(() {});
+                                      return;
+                                    }
                                   }
 
-                                  setState(() {});
+                                  if (shouldSetState) safeSetState(() {});
                                 },
                                 child: Text(
                                   FFLocalizations.of(context).getText(
@@ -311,9 +325,10 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                       ),
                     ),
                     if (valueOrDefault<bool>(
-                      _model.check,
-                      false,
-                    ))
+                          _model.check,
+                          false,
+                        ) &&
+                        (_model.isHiddenFrom == false))
                       Builder(
                         builder: (context) {
                           final addresses = (PlacesGoogleAPICall.address(
@@ -346,7 +361,7 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                                       highlightColor: Colors.transparent,
                                       onTap: () async {
                                         if (_model.check!) {
-                                          setState(() {
+                                          safeSetState(() {
                                             _model.textController1?.text =
                                                 addressesItem;
                                             _model.textController1?.selection =
@@ -357,7 +372,7 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                                                         .length);
                                           });
                                         } else {
-                                          setState(() {
+                                          safeSetState(() {
                                             _model.textController2?.text =
                                                 addressesItem;
                                             _model.textController2?.selection =
@@ -376,6 +391,9 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                                               'AIzaSyBUn77A8dXVmaBsuFMvOH3-I5co-LXfhug',
                                         );
 
+                                        _model.isHiddenFrom = true;
+                                        _model.check = null;
+                                        safeSetState(() {});
                                         FFAppState().fromWhere =
                                             functions.convertToLatLng(
                                                 GoogleAPICall.latLngs(
@@ -384,7 +402,7 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                                                     .first);
                                         FFAppState().update(() {});
 
-                                        setState(() {});
+                                        safeSetState(() {});
                                       },
                                       child: Row(
                                         mainAxisSize: MainAxisSize.max,
@@ -474,7 +492,7 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                                     focusNode: _model.textFieldFocusNode2,
                                     onChanged: (_) => EasyDebounce.debounce(
                                       '_model.textController2',
-                                      const Duration(milliseconds: 2000),
+                                      const Duration(milliseconds: 200),
                                       () async {
                                         await Future.delayed(
                                             const Duration(milliseconds: 100));
@@ -486,9 +504,10 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                                         );
 
                                         _model.check = false;
-                                        setState(() {});
+                                        _model.isHiddenTo = false;
+                                        safeSetState(() {});
 
-                                        setState(() {});
+                                        safeSetState(() {});
                                       },
                                     ),
                                     autofocus: false,
@@ -551,54 +570,64 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                                   hoverColor: Colors.transparent,
                                   highlightColor: Colors.transparent,
                                   onTap: () async {
-                                    if (await getPermissionStatus(
-                                        locationPermission)) {
-                                      await showModalBottomSheet(
-                                        isScrollControlled: true,
-                                        backgroundColor: Colors.transparent,
-                                        enableDrag: false,
-                                        context: context,
-                                        builder: (context) {
-                                          return Padding(
-                                            padding: MediaQuery.viewInsetsOf(
-                                                context),
-                                            child: const SizedBox(
-                                              height: double.infinity,
-                                              child: MapToPageComponentWidget(),
-                                            ),
-                                          );
-                                        },
-                                      ).then((value) => safeSetState(
-                                          () => _model.getToAddress = value));
+                                    var shouldSetState = false;
+                                    if (!(await getPermissionStatus(
+                                        locationPermission))) {
+                                      await requestPermission(
+                                          locationPermission);
+                                      if (!(await getPermissionStatus(
+                                          locationPermission))) {
+                                        await showModalBottomSheet(
+                                          isScrollControlled: true,
+                                          backgroundColor: Colors.transparent,
+                                          enableDrag: false,
+                                          context: context,
+                                          builder: (context) {
+                                            return Padding(
+                                              padding: MediaQuery.viewInsetsOf(
+                                                  context),
+                                              child: const SizedBox(
+                                                height: double.infinity,
+                                                child: GetLocationWidget(),
+                                              ),
+                                            );
+                                          },
+                                        ).then((value) => safeSetState(() {}));
 
-                                      setState(() {
-                                        _model.textController2?.text =
-                                            _model.getToAddress!;
-                                        _model.textController2?.selection =
-                                            TextSelection.collapsed(
-                                                offset: _model.textController2!
-                                                    .text.length);
-                                      });
-                                    } else {
-                                      await showModalBottomSheet(
-                                        isScrollControlled: true,
-                                        backgroundColor: Colors.transparent,
-                                        enableDrag: false,
-                                        context: context,
-                                        builder: (context) {
-                                          return Padding(
-                                            padding: MediaQuery.viewInsetsOf(
-                                                context),
-                                            child: const SizedBox(
-                                              height: double.infinity,
-                                              child: GetLocationWidget(),
-                                            ),
-                                          );
-                                        },
-                                      ).then((value) => safeSetState(() {}));
+                                        if (shouldSetState) {
+                                          safeSetState(() {});
+                                        }
+                                        return;
+                                      }
                                     }
+                                    await showModalBottomSheet(
+                                      isScrollControlled: true,
+                                      backgroundColor: Colors.transparent,
+                                      enableDrag: false,
+                                      context: context,
+                                      builder: (context) {
+                                        return Padding(
+                                          padding:
+                                              MediaQuery.viewInsetsOf(context),
+                                          child: const SizedBox(
+                                            height: double.infinity,
+                                            child: MapToPageComponentWidget(),
+                                          ),
+                                        );
+                                      },
+                                    ).then((value) => safeSetState(
+                                        () => _model.getToAddress = value));
 
-                                    setState(() {});
+                                    shouldSetState = true;
+                                    safeSetState(() {
+                                      _model.textController2?.text =
+                                          _model.getToAddress!;
+                                      _model.textController2?.selection =
+                                          TextSelection.collapsed(
+                                              offset: _model.textController2!
+                                                  .text.length);
+                                    });
+                                    if (shouldSetState) safeSetState(() {});
                                   },
                                   child: Text(
                                     FFLocalizations.of(context).getText(
@@ -620,9 +649,10 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                         ),
                       ),
                     if (!valueOrDefault<bool>(
-                      _model.check,
-                      true,
-                    ))
+                          _model.check,
+                          true,
+                        ) &&
+                        (_model.isHiddenTo == false))
                       Padding(
                         padding:
                             const EdgeInsetsDirectional.fromSTEB(0.0, 8.0, 0.0, 0.0),
@@ -658,7 +688,7 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                                         highlightColor: Colors.transparent,
                                         onTap: () async {
                                           if (_model.check!) {
-                                            setState(() {
+                                            safeSetState(() {
                                               _model.textController1?.text =
                                                   addressesItem;
                                               _model.textController1
@@ -670,7 +700,7 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                                                           .length);
                                             });
                                           } else {
-                                            setState(() {
+                                            safeSetState(() {
                                               _model.textController2?.text =
                                                   addressesItem;
                                               _model.textController2
@@ -691,6 +721,9 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                                                 'AIzaSyBUn77A8dXVmaBsuFMvOH3-I5co-LXfhug',
                                           );
 
+                                          _model.check = null;
+                                          _model.isHiddenTo = true;
+                                          safeSetState(() {});
                                           FFAppState().toWhere =
                                               functions.convertToLatLng(
                                                   GoogleAPICall.latLngs(
@@ -699,7 +732,7 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                                                       .first);
                                           FFAppState().update(() {});
 
-                                          setState(() {});
+                                          safeSetState(() {});
                                         },
                                         child: Row(
                                           mainAxisSize: MainAxisSize.max,
@@ -783,9 +816,17 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                                       );
                                     },
                                   );
-                                  if (shouldSetState) setState(() {});
+                                  if (shouldSetState) safeSetState(() {});
                                   return;
                                 }
+                                _model.foundUsers = await queryUsersRecordOnce(
+                                  queryBuilder: (usersRecord) =>
+                                      usersRecord.where(
+                                    'role',
+                                    isEqualTo: 1,
+                                  ),
+                                );
+                                shouldSetState = true;
 
                                 var ridesRecordReference =
                                     RidesRecord.collection.doc();
@@ -816,13 +857,20 @@ class _ClientBottomSheetWidgetState extends State<ClientBottomSheetWidget> {
                                       _model.newOrderRide,
                                       ParamType.Document,
                                     ),
+                                    'drivers': serializeParam(
+                                      _model.foundUsers
+                                          ?.map((e) => e.reference)
+                                          .toList(),
+                                      ParamType.DocumentReference,
+                                      isList: true,
+                                    ),
                                   }.withoutNulls,
                                   extra: <String, dynamic>{
                                     'newRide': _model.newOrderRide,
                                   },
                                 );
 
-                                if (shouldSetState) setState(() {});
+                                if (shouldSetState) safeSetState(() {});
                               },
                         text: FFLocalizations.of(context).getText(
                           'smursx0f' /* Заказать такси */,

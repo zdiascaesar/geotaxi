@@ -57,9 +57,49 @@ double? avgRating(
   double? totalVotes,
   double? totalNumber,
 ) {
-  // count avg of rating out of 5
+  // Calculate average rating out of 5
   if (totalVotes == null || totalNumber == null || totalNumber == 0) {
     return null;
   }
-  return (totalVotes / totalNumber) * 5;
+  return (totalVotes / totalNumber);
+}
+
+bool? classCarIsVip(String? year) {
+  if (year == null) {
+    return null;
+  }
+  final intYear = int.tryParse(year);
+  if (intYear == null) {
+    return null;
+  }
+  return intYear >= 2020;
+}
+
+bool isLocationAvailable(LatLng? currentUserLocationValue) {
+  if (currentUserLocationValue == null) {
+    return false;
+  }
+
+  // Проверяем, равны ли координаты 0,0
+  if (currentUserLocationValue!.latitude == 0 &&
+      currentUserLocationValue!.longitude == 0) {
+    return false;
+  }
+
+  // Если координаты не равны 0,0, считаем, что локация доступна
+  return true;
+}
+
+bool? returnFalsoif0(LatLng? currentDeviceLocation) {
+  // return false if current device location equals 0,0
+  if (currentDeviceLocation == null) {
+    return false;
+  }
+
+  if (currentDeviceLocation.latitude == 0 &&
+      currentDeviceLocation.longitude == 0) {
+    return false;
+  }
+
+  return true;
 }

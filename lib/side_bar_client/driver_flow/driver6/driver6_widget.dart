@@ -1,13 +1,12 @@
 import '/backend/backend.dart';
-import '/flutter_flow/flutter_flow_google_map.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/side_bar_client/side_bar/side_bar_widget.dart';
+import '/custom_code/widgets/index.dart' as custom_widgets;
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'driver6_model.dart';
 export 'driver6_model.dart';
 
@@ -35,7 +34,7 @@ class _Driver6WidgetState extends State<Driver6Widget> {
     _model = createModel(context, () => Driver6Model());
 
     getCurrentUserLocation(defaultLocation: const LatLng(0.0, 0.0), cached: true)
-        .then((loc) => setState(() => currentUserLocationValue = loc));
+        .then((loc) => safeSetState(() => currentUserLocationValue = loc));
   }
 
   @override
@@ -65,65 +64,56 @@ class _Driver6WidgetState extends State<Driver6Widget> {
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        key: scaffoldKey,
-        resizeToAvoidBottomInset: false,
-        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-        drawer: Drawer(
-          elevation: 16.0,
-          child: wrapWithModel(
-            model: _model.sideBarModel,
-            updateCallback: () => setState(() {}),
-            child: SideBarWidget(
-              action: () async {},
+      child: WillPopScope(
+        onWillPop: () async => false,
+        child: Scaffold(
+          key: scaffoldKey,
+          backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+          drawer: Drawer(
+            elevation: 16.0,
+            child: wrapWithModel(
+              model: _model.sideBarModel,
+              updateCallback: () => safeSetState(() {}),
+              child: SideBarWidget(
+                action: () async {},
+              ),
             ),
           ),
-        ),
-        appBar: AppBar(
-          backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
-          automaticallyImplyLeading: false,
-          leading: FlutterFlowIconButton(
-            borderColor: Colors.transparent,
-            borderRadius: 30.0,
-            borderWidth: 1.0,
-            buttonSize: 54.0,
-            icon: const Icon(
-              FFIcons.kline3horizontal,
-              color: Color(0xFF1C1C1E),
-              size: 24.0,
+          appBar: AppBar(
+            backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+            automaticallyImplyLeading: false,
+            leading: FlutterFlowIconButton(
+              borderColor: Colors.transparent,
+              borderRadius: 30.0,
+              borderWidth: 1.0,
+              buttonSize: 54.0,
+              icon: const Icon(
+                FFIcons.kline3horizontal,
+                color: Color(0xFF1C1C1E),
+                size: 24.0,
+              ),
+              onPressed: () async {
+                scaffoldKey.currentState!.openDrawer();
+              },
             ),
-            onPressed: () async {
-              scaffoldKey.currentState!.openDrawer();
-            },
+            actions: const [],
+            centerTitle: true,
+            elevation: 0.5,
           ),
-          actions: const [],
-          centerTitle: true,
-          elevation: 0.5,
-        ),
-        body: Stack(
-          children: [
-            FlutterFlowGoogleMap(
-              controller: _model.googleMapsController,
-              onCameraIdle: (latLng) => _model.googleMapsCenter = latLng,
-              initialLocation: _model.googleMapsCenter ??=
-                  currentUserLocationValue!,
-              markerColor: GoogleMarkerColor.violet,
-              mapType: MapType.normal,
-              style: GoogleMapStyle.silver,
-              initialZoom: 14.0,
-              allowInteraction: true,
-              allowZoom: true,
-              showZoomControls: true,
-              showLocation: true,
-              showCompass: false,
-              showMapToolbar: false,
-              showTraffic: false,
-              centerMapOnMarkerTap: true,
-            ),
-            Align(
-              alignment: const AlignmentDirectional(0.0, 1.0),
-              child: PointerInterceptor(
-                intercepting: isWeb,
+          body: Stack(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                height: double.infinity,
+                child: custom_widgets.CustomMapDriver(
+                  width: double.infinity,
+                  height: double.infinity,
+                  isStartFromDriver: true,
+                  fromWhere: currentUserLocationValue,
+                ),
+              ),
+              Align(
+                alignment: const AlignmentDirectional(0.0, 1.0),
                 child: Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -281,8 +271,8 @@ class _Driver6WidgetState extends State<Driver6Widget> {
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

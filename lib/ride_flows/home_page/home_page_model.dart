@@ -17,11 +17,12 @@ class HomePageModel extends FlutterFlowModel<HomePageWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // Stores action output result for [Custom Action - chekLocationPermission] action in HomePage widget.
-  bool? locationPermission;
+  bool? locationIsTrue;
   // Stores action output result for [Firestore Query - Query a collection] action in HomePage widget.
-  DriversRecord? driverFound;
+  RidesRecord? ongoingRide;
+  // Stores action output result for [Firestore Query - Query a collection] action in HomePage widget.
+  RidesRecord? ongoingRideClient;
   // Model for SideBar component.
   late SideBarModel sideBarModel;
 

@@ -14,9 +14,11 @@ class HistoryDetailPageWidget extends StatefulWidget {
   const HistoryDetailPageWidget({
     super.key,
     required this.ride,
+    required this.fromHistory,
   });
 
   final RidesRecord? ride;
+  final bool? fromHistory;
 
   @override
   State<HistoryDetailPageWidget> createState() =>
@@ -38,11 +40,11 @@ class _HistoryDetailPageWidgetState extends State<HistoryDetailPageWidget> {
       await Future.wait([
         Future(() async {
           _model.addToLatlng(widget.ride!.fromLocation!);
-          setState(() {});
+          safeSetState(() {});
         }),
         Future(() async {
           _model.addToLatlng(widget.ride!.toLocation!);
-          setState(() {});
+          safeSetState(() {});
         }),
       ]);
     });
@@ -59,88 +61,92 @@ class _HistoryDetailPageWidgetState extends State<HistoryDetailPageWidget> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        key: scaffoldKey,
-        resizeToAvoidBottomInset: false,
-        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-        appBar: AppBar(
-          backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
-          automaticallyImplyLeading: false,
-          leading: FlutterFlowIconButton(
-            borderColor: Colors.transparent,
-            borderRadius: 30.0,
-            borderWidth: 1.0,
-            buttonSize: 54.0,
-            icon: const Icon(
-              FFIcons.kchevronbackward,
-              color: Color(0xFF1C1C1E),
-              size: 24.0,
-            ),
-            onPressed: () async {
-              context.pop();
-            },
-          ),
-          title: Text(
-            FFLocalizations.of(context).getText(
-              '859iqv74' /* История поездки */,
-            ),
-            style: FlutterFlowTheme.of(context).headlineMedium.override(
-                  fontFamily: 'Inter',
-                  color: const Color(0xFF1C1C1E),
-                  fontSize: 19.0,
-                  letterSpacing: 0.0,
-                ),
-          ),
-          actions: const [],
-          centerTitle: false,
-          elevation: 0.5,
-        ),
-        body: Stack(
-          children: [
-            FlutterFlowGoogleMap(
-              controller: _model.googleMapsController,
-              onCameraIdle: (latLng) => _model.googleMapsCenter = latLng,
-              initialLocation: _model.googleMapsCenter ??= _model.latlng.first,
-              markers: _model.latlng
-                  .map(
-                    (marker) => FlutterFlowMarker(
-                      marker.serialize(),
-                      marker,
-                    ),
-                  )
-                  .toList(),
-              markerColor: GoogleMarkerColor.violet,
-              mapType: MapType.normal,
-              style: GoogleMapStyle.silver,
-              initialZoom: 14.0,
-              allowInteraction: false,
-              allowZoom: false,
-              showZoomControls: false,
-              showLocation: false,
-              showCompass: false,
-              showMapToolbar: false,
-              showTraffic: false,
-              centerMapOnMarkerTap: false,
-            ),
-            PointerInterceptor(
-              intercepting: isWeb,
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  wrapWithModel(
-                    model: _model.singleHistoryRideModel,
-                    updateCallback: () => setState(() {}),
-                    updateOnChange: true,
-                    child: SingleHistoryRideWidget(
-                      ride: widget.ride!,
-                    ),
-                  ),
-                ],
+      child: WillPopScope(
+        onWillPop: () async => false,
+        child: Scaffold(
+          key: scaffoldKey,
+          resizeToAvoidBottomInset: false,
+          backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+          appBar: AppBar(
+            backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+            automaticallyImplyLeading: false,
+            leading: FlutterFlowIconButton(
+              borderColor: Colors.transparent,
+              borderRadius: 30.0,
+              borderWidth: 1.0,
+              buttonSize: 54.0,
+              icon: const Icon(
+                FFIcons.kchevronbackward,
+                color: Color(0xFF1C1C1E),
+                size: 24.0,
               ),
+              onPressed: () async {
+                context.pop();
+              },
             ),
-          ],
+            title: Text(
+              FFLocalizations.of(context).getText(
+                '859iqv74' /* История поездки */,
+              ),
+              style: FlutterFlowTheme.of(context).headlineMedium.override(
+                    fontFamily: 'Inter',
+                    color: const Color(0xFF1C1C1E),
+                    fontSize: 19.0,
+                    letterSpacing: 0.0,
+                  ),
+            ),
+            actions: const [],
+            centerTitle: false,
+            elevation: 0.5,
+          ),
+          body: Stack(
+            children: [
+              FlutterFlowGoogleMap(
+                controller: _model.googleMapsController,
+                onCameraIdle: (latLng) => _model.googleMapsCenter = latLng,
+                initialLocation: _model.googleMapsCenter ??=
+                    _model.latlng.first,
+                markers: _model.latlng
+                    .map(
+                      (marker) => FlutterFlowMarker(
+                        marker.serialize(),
+                        marker,
+                      ),
+                    )
+                    .toList(),
+                markerColor: GoogleMarkerColor.violet,
+                mapType: MapType.normal,
+                style: GoogleMapStyle.silver,
+                initialZoom: 14.0,
+                allowInteraction: false,
+                allowZoom: false,
+                showZoomControls: false,
+                showLocation: false,
+                showCompass: false,
+                showMapToolbar: false,
+                showTraffic: false,
+                centerMapOnMarkerTap: false,
+              ),
+              PointerInterceptor(
+                intercepting: isWeb,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    wrapWithModel(
+                      model: _model.singleHistoryRideModel,
+                      updateCallback: () => safeSetState(() {}),
+                      updateOnChange: true,
+                      child: SingleHistoryRideWidget(
+                        ride: widget.ride!,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

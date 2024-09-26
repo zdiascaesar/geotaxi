@@ -1,5 +1,6 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
+import '/components/nothing_found_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -37,252 +38,156 @@ class _HistoryPageWidgetState extends State<HistoryPageWidget> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        key: scaffoldKey,
-        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-        appBar: AppBar(
-          backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
-          automaticallyImplyLeading: false,
-          leading: FlutterFlowIconButton(
-            borderColor: Colors.transparent,
-            borderRadius: 30.0,
-            borderWidth: 1.0,
-            buttonSize: 54.0,
-            icon: const Icon(
-              FFIcons.kchevronbackward,
-              color: Color(0xFF1C1C1E),
-              size: 24.0,
+      child: WillPopScope(
+        onWillPop: () async => false,
+        child: Scaffold(
+          key: scaffoldKey,
+          backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+          appBar: AppBar(
+            backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+            automaticallyImplyLeading: false,
+            leading: FlutterFlowIconButton(
+              borderColor: Colors.transparent,
+              borderRadius: 30.0,
+              borderWidth: 1.0,
+              buttonSize: 54.0,
+              icon: const Icon(
+                FFIcons.kchevronbackward,
+                color: Color(0xFF1C1C1E),
+                size: 24.0,
+              ),
+              onPressed: () async {
+                context.pop();
+              },
             ),
-            onPressed: () async {
-              context.pop();
-            },
-          ),
-          title: Text(
-            FFLocalizations.of(context).getText(
-              '44yjhba9' /* История поездок */,
+            title: Text(
+              FFLocalizations.of(context).getText(
+                '44yjhba9' /* История поездок */,
+              ),
+              style: FlutterFlowTheme.of(context).headlineMedium.override(
+                    fontFamily: 'Inter',
+                    color: const Color(0xFF1C1C1E),
+                    fontSize: 19.0,
+                    letterSpacing: 0.0,
+                  ),
             ),
-            style: FlutterFlowTheme.of(context).headlineMedium.override(
-                  fontFamily: 'Inter',
-                  color: const Color(0xFF1C1C1E),
-                  fontSize: 19.0,
-                  letterSpacing: 0.0,
-                ),
+            actions: const [],
+            centerTitle: false,
+            elevation: 0.5,
           ),
-          actions: const [],
-          centerTitle: false,
-          elevation: 0.5,
-        ),
-        body: SafeArea(
-          top: true,
-          child: Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  StreamBuilder<List<RidesRecord>>(
-                    stream: queryRidesRecord(
-                      queryBuilder: (ridesRecord) => ridesRecord.where(
-                        'status',
-                        isLessThan: 3,
-                      ),
-                      singleRecord: true,
-                    ),
-                    builder: (context, snapshot) {
-                      // Customize what your widget looks like when it's loading.
-                      if (!snapshot.hasData) {
-                        return Center(
-                          child: SizedBox(
-                            width: 30.0,
-                            height: 30.0,
-                            child: SpinKitPulse(
-                              color: FlutterFlowTheme.of(context).primary,
-                              size: 30.0,
-                            ),
+          body: SafeArea(
+            top: true,
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (valueOrDefault(currentUserDocument?.role, 0) == 0)
+                      AuthUserStreamWidget(
+                        builder: (context) => StreamBuilder<List<RidesRecord>>(
+                          stream: queryRidesRecord(
+                            queryBuilder: (ridesRecord) => ridesRecord
+                                .where(
+                                  'user_id',
+                                  isEqualTo: currentUserReference,
+                                )
+                                .orderBy('DroppedOff_at', descending: true),
                           ),
-                        );
-                      }
-                      List<RidesRecord> currentRideRidesRecordList =
-                          snapshot.data!;
-                      // Return an empty Container when the item does not exist.
-                      if (snapshot.data!.isEmpty) {
-                        return Container();
-                      }
-                      final currentRideRidesRecord =
-                          currentRideRidesRecordList.isNotEmpty
-                              ? currentRideRidesRecordList.first
-                              : null;
+                          builder: (context, snapshot) {
+                            // Customize what your widget looks like when it's loading.
+                            if (!snapshot.hasData) {
+                              return Center(
+                                child: SizedBox(
+                                  width: 30.0,
+                                  height: 30.0,
+                                  child: SpinKitPulse(
+                                    color: FlutterFlowTheme.of(context).primary,
+                                    size: 30.0,
+                                  ),
+                                ),
+                              );
+                            }
+                            List<RidesRecord> listViewRidesRecordList =
+                                snapshot.data!;
+                            if (listViewRidesRecordList.isEmpty) {
+                              return const Center(
+                                child: NothingFoundWidget(),
+                              );
+                            }
 
-                      return Container(
-                        width: 100.0,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFF5FB),
-                          borderRadius: BorderRadius.circular(12.0),
-                          border: Border.all(
-                            color: const Color(0xFFEAEFF0),
-                          ),
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  20.0, 16.0, 20.0, 0.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    dateTimeFormat(
-                                      "yMMMd",
-                                      currentRideRidesRecord!.createdAt!,
-                                      locale: FFLocalizations.of(context)
-                                          .languageCode,
-                                    ),
-                                    style: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .override(
-                                          fontFamily: 'Inter',
-                                          letterSpacing: 0.0,
+                            return ListView.separated(
+                              padding: const EdgeInsets.symmetric(vertical: 20.0),
+                              primary: false,
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              itemCount: listViewRidesRecordList.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 20.0),
+                              itemBuilder: (context, listViewIndex) {
+                                final listViewRidesRecord =
+                                    listViewRidesRecordList[listViewIndex];
+                                return InkWell(
+                                  splashColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () async {
+                                    context.pushNamed(
+                                      'HistoryDetailPage',
+                                      queryParameters: {
+                                        'ride': serializeParam(
+                                          listViewRidesRecord,
+                                          ParamType.Document,
                                         ),
-                                  ),
-                                  Text(
-                                    FFLocalizations.of(context).getText(
-                                      '99kct668' /* Отмена */,
-                                    ),
-                                    style: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .override(
-                                          fontFamily: 'Inter',
-                                          color: FlutterFlowTheme.of(context)
-                                              .error,
-                                          letterSpacing: 0.0,
+                                        'fromHistory': serializeParam(
+                                          true,
+                                          ParamType.bool,
                                         ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const Divider(
-                              height: 40.0,
-                              thickness: 1.0,
-                              color: Color(0xFFEAEFF0),
-                            ),
-                            Padding(
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  20.0, 0.0, 20.0, 15.0),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        FFLocalizations.of(context).getText(
-                                          'j5fww5ko' /* A */,
-                                        ),
-                                        style: FlutterFlowTheme.of(context)
-                                            .labelLarge
-                                            .override(
-                                              fontFamily: 'Inter',
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primary,
-                                              letterSpacing: 0.0,
-                                              fontWeight: FontWeight.w500,
-                                            ),
+                                      }.withoutNulls,
+                                      extra: <String, dynamic>{
+                                        'ride': listViewRidesRecord,
+                                      },
+                                    );
+                                  },
+                                  child: Container(
+                                    width: 100.0,
+                                    decoration: BoxDecoration(
+                                      color: valueOrDefault<Color>(
+                                        (listViewRidesRecord.status == 9) ||
+                                                listViewRidesRecord.cancelled
+                                            ? const Color(0xFFFFF5FB)
+                                            : const Color(0xFFF7F8F9),
+                                        const Color(0xFFFFF5FB),
                                       ),
-                                      Expanded(
-                                        child: Padding(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      border: Border.all(
+                                        color: const Color(0xFFEAEFF0),
+                                      ),
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Padding(
                                           padding:
                                               const EdgeInsetsDirectional.fromSTEB(
-                                                  10.0, 0.0, 0.0, 0.0),
-                                          child: Column(
+                                                  20.0, 16.0, 20.0, 0.0),
+                                          child: Row(
                                             mainAxisSize: MainAxisSize.max,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.stretch,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
                                                 valueOrDefault<String>(
-                                                  currentRideRidesRecord
-                                                      .fromLoc,
-                                                  'null',
-                                                ),
-                                                style:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyMedium
-                                                        .override(
-                                                          fontFamily: 'Inter',
-                                                          letterSpacing: 0.0,
-                                                        ),
-                                              ),
-                                              Text(
-                                                dateTimeFormat(
-                                                  "Hm",
-                                                  currentRideRidesRecord
-                                                      .pickedUpAt!,
-                                                  locale: FFLocalizations.of(
-                                                          context)
-                                                      .languageCode,
-                                                ),
-                                                style:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyMedium
-                                                        .override(
-                                                          fontFamily: 'Inter',
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .secondaryText,
-                                                          letterSpacing: 0.0,
-                                                        ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const Divider(
-                                    height: 24.0,
-                                    thickness: 1.0,
-                                    color: Color(0xFFEAEFF0),
-                                  ),
-                                  Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        FFLocalizations.of(context).getText(
-                                          'swzqjuh4' /* B */,
-                                        ),
-                                        style: FlutterFlowTheme.of(context)
-                                            .labelLarge
-                                            .override(
-                                              fontFamily: 'Inter',
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primary,
-                                              letterSpacing: 0.0,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsetsDirectional.fromSTEB(
-                                                  10.0, 0.0, 0.0, 0.0),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.max,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.stretch,
-                                            children: [
-                                              Text(
-                                                valueOrDefault<String>(
-                                                  currentRideRidesRecord.toLoc,
+                                                  dateTimeFormat(
+                                                    "MMMMEEEEd",
+                                                    listViewRidesRecord
+                                                        .pickedUpAt,
+                                                    locale: FFLocalizations.of(
+                                                            context)
+                                                        .languageCode,
+                                                  ),
                                                   'NULL',
                                                 ),
                                                 style:
@@ -293,344 +198,580 @@ class _HistoryPageWidgetState extends State<HistoryPageWidget> {
                                                           letterSpacing: 0.0,
                                                         ),
                                               ),
-                                              Text(
-                                                dateTimeFormat(
-                                                  "Hm",
-                                                  currentRideRidesRecord
-                                                      .droppedOffAt!,
-                                                  locale: FFLocalizations.of(
+                                              if ((listViewRidesRecord.status ==
+                                                      9) ||
+                                                  listViewRidesRecord.cancelled)
+                                                Text(
+                                                  FFLocalizations.of(context)
+                                                      .getText(
+                                                    '9rnvuwi4' /* Отменена */,
+                                                  ),
+                                                  style: FlutterFlowTheme.of(
                                                           context)
-                                                      .languageCode,
+                                                      .bodyMedium
+                                                      .override(
+                                                        fontFamily: 'Inter',
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .error,
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                        const Divider(
+                                          height: 40.0,
+                                          thickness: 1.0,
+                                          color: Color(0xFFEAEFF0),
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsetsDirectional.fromSTEB(
+                                                  20.0, 0.0, 20.0, 15.0),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.max,
+                                            children: [
+                                              Row(
+                                                mainAxisSize: MainAxisSize.max,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    FFLocalizations.of(context)
+                                                        .getText(
+                                                      '4tsqh3j2' /* A */,
+                                                    ),
+                                                    style: FlutterFlowTheme.of(
+                                                            context)
+                                                        .labelLarge
+                                                        .override(
+                                                          fontFamily: 'Inter',
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .primary,
+                                                          letterSpacing: 0.0,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                  ),
+                                                  Expanded(
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsetsDirectional
+                                                              .fromSTEB(
+                                                                  10.0,
+                                                                  0.0,
+                                                                  0.0,
+                                                                  0.0),
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.max,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .stretch,
+                                                        children: [
+                                                          Text(
+                                                            valueOrDefault<
+                                                                String>(
+                                                              listViewRidesRecord
+                                                                  .fromLoc,
+                                                              'NULL',
+                                                            ),
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .bodyMedium
+                                                                .override(
+                                                                  fontFamily:
+                                                                      'Inter',
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                ),
+                                                          ),
+                                                          Text(
+                                                            valueOrDefault<
+                                                                String>(
+                                                              dateTimeFormat(
+                                                                "Hm",
+                                                                listViewRidesRecord
+                                                                    .pickedUpAt,
+                                                                locale: FFLocalizations.of(
+                                                                        context)
+                                                                    .languageCode,
+                                                              ),
+                                                              'NULL',
+                                                            ),
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .bodyMedium
+                                                                .override(
+                                                                  fontFamily:
+                                                                      'Inter',
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .secondaryText,
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const Divider(
+                                                height: 24.0,
+                                                thickness: 1.0,
+                                                color: Color(0xFFEAEFF0),
+                                              ),
+                                              Row(
+                                                mainAxisSize: MainAxisSize.max,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    FFLocalizations.of(context)
+                                                        .getText(
+                                                      '7h9jo930' /* B */,
+                                                    ),
+                                                    style: FlutterFlowTheme.of(
+                                                            context)
+                                                        .labelLarge
+                                                        .override(
+                                                          fontFamily: 'Inter',
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .primary,
+                                                          letterSpacing: 0.0,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                  ),
+                                                  Expanded(
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsetsDirectional
+                                                              .fromSTEB(
+                                                                  10.0,
+                                                                  0.0,
+                                                                  0.0,
+                                                                  0.0),
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.max,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .stretch,
+                                                        children: [
+                                                          Text(
+                                                            valueOrDefault<
+                                                                String>(
+                                                              listViewRidesRecord
+                                                                  .toLoc,
+                                                              'NULL',
+                                                            ),
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .bodyMedium
+                                                                .override(
+                                                                  fontFamily:
+                                                                      'Inter',
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                ),
+                                                          ),
+                                                          Text(
+                                                            valueOrDefault<
+                                                                String>(
+                                                              dateTimeFormat(
+                                                                "Hm",
+                                                                listViewRidesRecord
+                                                                    .droppedOffAt,
+                                                                locale: FFLocalizations.of(
+                                                                        context)
+                                                                    .languageCode,
+                                                              ),
+                                                              'NULL',
+                                                            ),
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .bodyMedium
+                                                                .override(
+                                                                  fontFamily:
+                                                                      'Inter',
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .secondaryText,
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    if (valueOrDefault(currentUserDocument?.role, 0) == 1)
+                      AuthUserStreamWidget(
+                        builder: (context) => StreamBuilder<List<RidesRecord>>(
+                          stream: queryRidesRecord(
+                            queryBuilder: (ridesRecord) => ridesRecord
+                                .where(
+                                  'assigned_driver',
+                                  isEqualTo: currentUserReference,
+                                )
+                                .orderBy('DroppedOff_at', descending: true),
+                          ),
+                          builder: (context, snapshot) {
+                            // Customize what your widget looks like when it's loading.
+                            if (!snapshot.hasData) {
+                              return Center(
+                                child: SizedBox(
+                                  width: 30.0,
+                                  height: 30.0,
+                                  child: SpinKitPulse(
+                                    color: FlutterFlowTheme.of(context).primary,
+                                    size: 30.0,
+                                  ),
+                                ),
+                              );
+                            }
+                            List<RidesRecord> listViewRidesRecordList =
+                                snapshot.data!;
+                            if (listViewRidesRecordList.isEmpty) {
+                              return const Center(
+                                child: NothingFoundWidget(),
+                              );
+                            }
+
+                            return ListView.separated(
+                              padding: const EdgeInsets.symmetric(vertical: 20.0),
+                              primary: false,
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              itemCount: listViewRidesRecordList.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 20.0),
+                              itemBuilder: (context, listViewIndex) {
+                                final listViewRidesRecord =
+                                    listViewRidesRecordList[listViewIndex];
+                                return InkWell(
+                                  splashColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () async {
+                                    context.pushNamed(
+                                      'HistoryDetailPage',
+                                      queryParameters: {
+                                        'ride': serializeParam(
+                                          listViewRidesRecord,
+                                          ParamType.Document,
+                                        ),
+                                        'fromHistory': serializeParam(
+                                          true,
+                                          ParamType.bool,
+                                        ),
+                                      }.withoutNulls,
+                                      extra: <String, dynamic>{
+                                        'ride': listViewRidesRecord,
+                                      },
+                                    );
+                                  },
+                                  child: Container(
+                                    width: 100.0,
+                                    decoration: BoxDecoration(
+                                      color: valueOrDefault<Color>(
+                                        (listViewRidesRecord.status == 9) ||
+                                                listViewRidesRecord.cancelled
+                                            ? const Color(0xFFFFF5FB)
+                                            : const Color(0xFFF7F8F9),
+                                        const Color(0xFFFFF5FB),
+                                      ),
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      border: Border.all(
+                                        color: const Color(0xFFEAEFF0),
+                                      ),
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Padding(
+                                          padding:
+                                              const EdgeInsetsDirectional.fromSTEB(
+                                                  20.0, 16.0, 20.0, 0.0),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                valueOrDefault<String>(
+                                                  dateTimeFormat(
+                                                    "MMMMEEEEd",
+                                                    listViewRidesRecord
+                                                        .pickedUpAt,
+                                                    locale: FFLocalizations.of(
+                                                            context)
+                                                        .languageCode,
+                                                  ),
+                                                  'NULL',
                                                 ),
                                                 style:
                                                     FlutterFlowTheme.of(context)
                                                         .bodyMedium
                                                         .override(
                                                           fontFamily: 'Inter',
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .secondaryText,
                                                           letterSpacing: 0.0,
                                                         ),
+                                              ),
+                                              if ((listViewRidesRecord.status ==
+                                                      9) ||
+                                                  listViewRidesRecord.cancelled)
+                                                Text(
+                                                  FFLocalizations.of(context)
+                                                      .getText(
+                                                    'bcytl0dv' /* Отменена */,
+                                                  ),
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .bodyMedium
+                                                      .override(
+                                                        fontFamily: 'Inter',
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .error,
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                        const Divider(
+                                          height: 40.0,
+                                          thickness: 1.0,
+                                          color: Color(0xFFEAEFF0),
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsetsDirectional.fromSTEB(
+                                                  20.0, 0.0, 20.0, 15.0),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.max,
+                                            children: [
+                                              Row(
+                                                mainAxisSize: MainAxisSize.max,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    FFLocalizations.of(context)
+                                                        .getText(
+                                                      'lck3ez2z' /* A */,
+                                                    ),
+                                                    style: FlutterFlowTheme.of(
+                                                            context)
+                                                        .labelLarge
+                                                        .override(
+                                                          fontFamily: 'Inter',
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .primary,
+                                                          letterSpacing: 0.0,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                  ),
+                                                  Expanded(
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsetsDirectional
+                                                              .fromSTEB(
+                                                                  10.0,
+                                                                  0.0,
+                                                                  0.0,
+                                                                  0.0),
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.max,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .stretch,
+                                                        children: [
+                                                          Text(
+                                                            valueOrDefault<
+                                                                String>(
+                                                              listViewRidesRecord
+                                                                  .fromLoc,
+                                                              'NULL',
+                                                            ),
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .bodyMedium
+                                                                .override(
+                                                                  fontFamily:
+                                                                      'Inter',
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                ),
+                                                          ),
+                                                          Text(
+                                                            valueOrDefault<
+                                                                String>(
+                                                              dateTimeFormat(
+                                                                "Hm",
+                                                                listViewRidesRecord
+                                                                    .pickedUpAt,
+                                                                locale: FFLocalizations.of(
+                                                                        context)
+                                                                    .languageCode,
+                                                              ),
+                                                              'NULL',
+                                                            ),
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .bodyMedium
+                                                                .override(
+                                                                  fontFamily:
+                                                                      'Inter',
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .secondaryText,
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const Divider(
+                                                height: 24.0,
+                                                thickness: 1.0,
+                                                color: Color(0xFFEAEFF0),
+                                              ),
+                                              Row(
+                                                mainAxisSize: MainAxisSize.max,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    FFLocalizations.of(context)
+                                                        .getText(
+                                                      '0cockyq2' /* B */,
+                                                    ),
+                                                    style: FlutterFlowTheme.of(
+                                                            context)
+                                                        .labelLarge
+                                                        .override(
+                                                          fontFamily: 'Inter',
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .primary,
+                                                          letterSpacing: 0.0,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                  ),
+                                                  Expanded(
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsetsDirectional
+                                                              .fromSTEB(
+                                                                  10.0,
+                                                                  0.0,
+                                                                  0.0,
+                                                                  0.0),
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.max,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .stretch,
+                                                        children: [
+                                                          Text(
+                                                            valueOrDefault<
+                                                                String>(
+                                                              listViewRidesRecord
+                                                                  .toLoc,
+                                                              'NULL',
+                                                            ),
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .bodyMedium
+                                                                .override(
+                                                                  fontFamily:
+                                                                      'Inter',
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                ),
+                                                          ),
+                                                          Text(
+                                                            valueOrDefault<
+                                                                String>(
+                                                              dateTimeFormat(
+                                                                "Hm",
+                                                                listViewRidesRecord
+                                                                    .droppedOffAt,
+                                                                locale: FFLocalizations.of(
+                                                                        context)
+                                                                    .languageCode,
+                                                              ),
+                                                              'NULL',
+                                                            ),
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .bodyMedium
+                                                                .override(
+                                                                  fontFamily:
+                                                                      'Inter',
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .secondaryText,
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ],
-                              ),
-                            ),
-                          ],
+                                );
+                              },
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
-                  StreamBuilder<List<RidesRecord>>(
-                    stream: queryRidesRecord(
-                      queryBuilder: (ridesRecord) => ridesRecord
-                          .where(Filter.or(
-                            Filter(
-                              'user_id',
-                              isEqualTo: currentUserReference,
-                            ),
-                            Filter(
-                              'assigned_driver',
-                              isEqualTo: currentUserReference,
-                            ),
-                          ))
-                          .orderBy('DroppedOff_at', descending: true),
-                    ),
-                    builder: (context, snapshot) {
-                      // Customize what your widget looks like when it's loading.
-                      if (!snapshot.hasData) {
-                        return Center(
-                          child: SizedBox(
-                            width: 30.0,
-                            height: 30.0,
-                            child: SpinKitPulse(
-                              color: FlutterFlowTheme.of(context).primary,
-                              size: 30.0,
-                            ),
-                          ),
-                        );
-                      }
-                      List<RidesRecord> listViewRidesRecordList =
-                          snapshot.data!;
-
-                      return ListView.separated(
-                        padding: const EdgeInsets.symmetric(vertical: 20.0),
-                        primary: false,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.vertical,
-                        itemCount: listViewRidesRecordList.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 20.0),
-                        itemBuilder: (context, listViewIndex) {
-                          final listViewRidesRecord =
-                              listViewRidesRecordList[listViewIndex];
-                          return InkWell(
-                            splashColor: Colors.transparent,
-                            focusColor: Colors.transparent,
-                            hoverColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: () async {
-                              context.pushNamed(
-                                'HistoryDetailPage',
-                                queryParameters: {
-                                  'ride': serializeParam(
-                                    listViewRidesRecord,
-                                    ParamType.Document,
-                                  ),
-                                }.withoutNulls,
-                                extra: <String, dynamic>{
-                                  'ride': listViewRidesRecord,
-                                },
-                              );
-                            },
-                            child: Container(
-                              width: 100.0,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF7F8F9),
-                                borderRadius: BorderRadius.circular(12.0),
-                                border: Border.all(
-                                  color: const Color(0xFFEAEFF0),
-                                ),
-                              ),
-                              child: InkWell(
-                                splashColor: Colors.transparent,
-                                focusColor: Colors.transparent,
-                                hoverColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
-                                onTap: () async {
-                                  context.pushNamed(
-                                    'Client5',
-                                    queryParameters: {
-                                      'ridePayment': serializeParam(
-                                        listViewRidesRecord.reference,
-                                        ParamType.DocumentReference,
-                                      ),
-                                    }.withoutNulls,
-                                  );
-                                },
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsetsDirectional.fromSTEB(
-                                          20.0, 16.0, 20.0, 0.0),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            dateTimeFormat(
-                                              "MMMMEEEEd",
-                                              listViewRidesRecord.pickedUpAt!,
-                                              locale:
-                                                  FFLocalizations.of(context)
-                                                      .languageCode,
-                                            ),
-                                            style: FlutterFlowTheme.of(context)
-                                                .bodyMedium
-                                                .override(
-                                                  fontFamily: 'Inter',
-                                                  letterSpacing: 0.0,
-                                                ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const Divider(
-                                      height: 40.0,
-                                      thickness: 1.0,
-                                      color: Color(0xFFEAEFF0),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsetsDirectional.fromSTEB(
-                                          20.0, 0.0, 20.0, 15.0),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.max,
-                                        children: [
-                                          Row(
-                                            mainAxisSize: MainAxisSize.max,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                FFLocalizations.of(context)
-                                                    .getText(
-                                                  '4tsqh3j2' /* A */,
-                                                ),
-                                                style:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelLarge
-                                                        .override(
-                                                          fontFamily: 'Inter',
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .primary,
-                                                          letterSpacing: 0.0,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                        ),
-                                              ),
-                                              Expanded(
-                                                child: Padding(
-                                                  padding: const EdgeInsetsDirectional
-                                                      .fromSTEB(
-                                                          10.0, 0.0, 0.0, 0.0),
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.max,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .stretch,
-                                                    children: [
-                                                      Text(
-                                                        listViewRidesRecord
-                                                            .fromLoc,
-                                                        style:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .bodyMedium
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Inter',
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                ),
-                                                      ),
-                                                      Text(
-                                                        dateTimeFormat(
-                                                          "Hm",
-                                                          listViewRidesRecord
-                                                              .pickedUpAt!,
-                                                          locale:
-                                                              FFLocalizations.of(
-                                                                      context)
-                                                                  .languageCode,
-                                                        ),
-                                                        style:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .bodyMedium
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Inter',
-                                                                  color: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .secondaryText,
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          const Divider(
-                                            height: 24.0,
-                                            thickness: 1.0,
-                                            color: Color(0xFFEAEFF0),
-                                          ),
-                                          Row(
-                                            mainAxisSize: MainAxisSize.max,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                FFLocalizations.of(context)
-                                                    .getText(
-                                                  '7h9jo930' /* B */,
-                                                ),
-                                                style:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelLarge
-                                                        .override(
-                                                          fontFamily: 'Inter',
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .primary,
-                                                          letterSpacing: 0.0,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                        ),
-                                              ),
-                                              Expanded(
-                                                child: Padding(
-                                                  padding: const EdgeInsetsDirectional
-                                                      .fromSTEB(
-                                                          10.0, 0.0, 0.0, 0.0),
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.max,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .stretch,
-                                                    children: [
-                                                      Text(
-                                                        listViewRidesRecord
-                                                            .toLoc,
-                                                        style:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .bodyMedium
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Inter',
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                ),
-                                                      ),
-                                                      Text(
-                                                        dateTimeFormat(
-                                                          "Hm",
-                                                          listViewRidesRecord
-                                                              .droppedOffAt!,
-                                                          locale:
-                                                              FFLocalizations.of(
-                                                                      context)
-                                                                  .languageCode,
-                                                        ),
-                                                        style:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .bodyMedium
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Inter',
-                                                                  color: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .secondaryText,
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ]
-                    .addToStart(const SizedBox(height: 20.0))
-                    .addToEnd(const SizedBox(height: 30.0)),
+                      ),
+                  ]
+                      .addToStart(const SizedBox(height: 20.0))
+                      .addToEnd(const SizedBox(height: 30.0)),
+                ),
               ),
             ),
           ),

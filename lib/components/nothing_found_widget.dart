@@ -1,7 +1,7 @@
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:lottie/lottie.dart';
 import 'nothing_found_model.dart';
 export 'nothing_found_model.dart';
 
@@ -41,24 +41,26 @@ class _NothingFoundWidgetState extends State<NothingFoundWidget> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Align(
-          alignment: const AlignmentDirectional(0.0, 0.0),
-          child: FaIcon(
-            FontAwesomeIcons.searchLocation,
-            color: FlutterFlowTheme.of(context).secondaryText,
-            size: 36.0,
-          ),
+        Lottie.asset(
+          'assets/lottie_animations/Animation_-_1725886969004.json',
+          width: MediaQuery.sizeOf(context).width * 1.0,
+          height: 150.0,
+          fit: BoxFit.contain,
+          animate: true,
         ),
-        Text(
-          FFLocalizations.of(context).getText(
-            'gkzpavwe' /* Nothing found */,
+        Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(0.0, 12.0, 0.0, 0.0),
+          child: Text(
+            FFLocalizations.of(context).getText(
+              'gkzpavwe' /* Ничего не найдено */,
+            ),
+            textAlign: TextAlign.center,
+            style: FlutterFlowTheme.of(context).bodyMedium.override(
+                  fontFamily: 'Inter',
+                  fontSize: 20.0,
+                  letterSpacing: 0.0,
+                ),
           ),
-          textAlign: TextAlign.center,
-          style: FlutterFlowTheme.of(context).bodyMedium.override(
-                fontFamily: 'Inter',
-                fontSize: 20.0,
-                letterSpacing: 0.0,
-              ),
         ),
       ].divide(const SizedBox(height: 6.0)),
     );

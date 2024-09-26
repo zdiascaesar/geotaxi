@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 class Client7Model extends FlutterFlowModel<Client7Widget> {
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // Model for SideBar component.
   late SideBarModel sideBarModel;
 

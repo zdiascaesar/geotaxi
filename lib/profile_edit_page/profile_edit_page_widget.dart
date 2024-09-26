@@ -1,4 +1,5 @@
 import '/auth/firebase_auth/auth_util.dart';
+import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -24,8 +25,13 @@ class _ProfileEditPageWidgetState extends State<ProfileEditPageWidget> {
     super.initState();
     _model = createModel(context, () => ProfileEditPageModel());
 
-    _model.emailFieldTextController ??= TextEditingController();
+    _model.emailFieldTextController ??=
+        TextEditingController(text: currentUserEmail);
     _model.emailFieldFocusNode ??= FocusNode();
+
+    _model.phoneFieldTextController ??=
+        TextEditingController(text: currentPhoneNumber);
+    _model.phoneFieldFocusNode ??= FocusNode();
   }
 
   @override
@@ -39,263 +45,346 @@ class _ProfileEditPageWidgetState extends State<ProfileEditPageWidget> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        key: scaffoldKey,
-        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-        appBar: AppBar(
-          backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
-          automaticallyImplyLeading: false,
-          leading: FlutterFlowIconButton(
-            borderColor: Colors.transparent,
-            borderRadius: 30.0,
-            borderWidth: 1.0,
-            buttonSize: 54.0,
-            icon: const Icon(
-              FFIcons.kchevronbackward,
-              color: Color(0xFF1C1C1E),
-              size: 24.0,
+      child: WillPopScope(
+        onWillPop: () async => false,
+        child: Scaffold(
+          key: scaffoldKey,
+          backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+          appBar: AppBar(
+            backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+            automaticallyImplyLeading: false,
+            leading: FlutterFlowIconButton(
+              borderColor: Colors.transparent,
+              borderRadius: 30.0,
+              borderWidth: 1.0,
+              buttonSize: 54.0,
+              icon: const Icon(
+                FFIcons.kchevronbackward,
+                color: Color(0xFF1C1C1E),
+                size: 24.0,
+              ),
+              onPressed: () async {
+                context.pop();
+              },
             ),
-            onPressed: () async {
-              context.pop();
-            },
-          ),
-          title: Text(
-            FFLocalizations.of(context).getText(
-              '225tirmy' /* Редактировать профиль */,
+            title: Text(
+              FFLocalizations.of(context).getText(
+                '225tirmy' /* Редактировать профиль */,
+              ),
+              style: FlutterFlowTheme.of(context).headlineMedium.override(
+                    fontFamily: 'Inter',
+                    color: const Color(0xFF1C1C1E),
+                    fontSize: 19.0,
+                    letterSpacing: 0.0,
+                  ),
             ),
-            style: FlutterFlowTheme.of(context).headlineMedium.override(
-                  fontFamily: 'Inter',
-                  color: const Color(0xFF1C1C1E),
-                  fontSize: 19.0,
-                  letterSpacing: 0.0,
-                ),
-          ),
-          actions: [
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
-              child: InkWell(
-                splashColor: Colors.transparent,
-                focusColor: Colors.transparent,
-                hoverColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                onTap: () async {
-                  var confirmDialogResponse = await showDialog<bool>(
+            actions: [
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
+                child: InkWell(
+                  splashColor: Colors.transparent,
+                  focusColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  onTap: () async {
+                    var confirmDialogResponse = await showDialog<bool>(
+                          context: context,
+                          builder: (alertDialogContext) {
+                            return AlertDialog(
+                              title: const Text('Password change'),
+                              content: const Text(
+                                  'Are you sure you want to change your password?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(alertDialogContext, false),
+                                  child: const Text('No'),
+                                ),
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(alertDialogContext, true),
+                                  child: const Text('Yes'),
+                                ),
+                              ],
+                            );
+                          },
+                        ) ??
+                        false;
+                    if (confirmDialogResponse) {
+                      if (currentUserEmail.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Email required!',
+                            ),
+                          ),
+                        );
+                        return;
+                      }
+                      await authManager.resetPassword(
+                        email: currentUserEmail,
+                        context: context,
+                      );
+                      await showDialog(
                         context: context,
                         builder: (alertDialogContext) {
                           return AlertDialog(
-                            title: const Text('Password change'),
+                            title: const Text('Check E-mail'),
                             content: const Text(
-                                'Are you sure you want to change your password?'),
+                                'We have sent you an instruction to chage your password to your email'),
                             actions: [
                               TextButton(
                                 onPressed: () =>
-                                    Navigator.pop(alertDialogContext, false),
-                                child: const Text('No'),
-                              ),
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.pop(alertDialogContext, true),
-                                child: const Text('Yes'),
+                                    Navigator.pop(alertDialogContext),
+                                child: const Text('Ok'),
                               ),
                             ],
                           );
                         },
-                      ) ??
-                      false;
-                  if (confirmDialogResponse) {
-                    if (currentUserEmail.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Email required!',
-                          ),
-                        ),
                       );
-                      return;
-                    }
-                    await authManager.resetPassword(
-                      email: currentUserEmail,
-                      context: context,
-                    );
-                    await showDialog(
-                      context: context,
-                      builder: (alertDialogContext) {
-                        return AlertDialog(
-                          title: const Text('Check E-mail'),
-                          content: const Text(
-                              'We have sent you an instruction to chage your password to your email'),
-                          actions: [
-                            TextButton(
-                              onPressed: () =>
-                                  Navigator.pop(alertDialogContext),
-                              child: const Text('Ok'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                    GoRouter.of(context).prepareAuthEvent(true);
-                    await authManager.signOut();
-                    GoRouter.of(context).clearRedirectLocation();
+                      GoRouter.of(context).prepareAuthEvent(true);
+                      await authManager.signOut();
+                      GoRouter.of(context).clearRedirectLocation();
 
-                    context.goNamedAuth(
-                      'LoginPage',
-                      context.mounted,
-                      ignoreRedirect: true,
-                    );
-                  }
-                },
-                child: Icon(
-                  FFIcons.krectangleandpencilandellipsis,
-                  color: FlutterFlowTheme.of(context).secondaryText,
-                  size: 24.0,
+                      context.goNamedAuth(
+                        'LoginPage',
+                        context.mounted,
+                        ignoreRedirect: true,
+                      );
+                    }
+                  },
+                  child: Icon(
+                    FFIcons.krectangleandpencilandellipsis,
+                    color: FlutterFlowTheme.of(context).secondaryText,
+                    size: 24.0,
+                  ),
                 ),
               ),
-            ),
-          ],
-          centerTitle: false,
-          elevation: 0.5,
-        ),
-        body: SafeArea(
-          top: true,
-          child: Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    TextFormField(
-                      controller: _model.emailFieldTextController,
-                      focusNode: _model.emailFieldFocusNode,
-                      autofocus: false,
-                      autofillHints: const [AutofillHints.email],
-                      textInputAction: TextInputAction.next,
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        labelStyle:
-                            FlutterFlowTheme.of(context).labelMedium.override(
-                                  fontFamily: 'Inter',
-                                  letterSpacing: 0.0,
+            ],
+            centerTitle: false,
+            elevation: 0.5,
+          ),
+          body: SafeArea(
+            top: true,
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Form(
+                        key: _model.formKey,
+                        autovalidateMode: AutovalidateMode.disabled,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            TextFormField(
+                              controller: _model.emailFieldTextController,
+                              focusNode: _model.emailFieldFocusNode,
+                              autofocus: false,
+                              autofillHints: const [AutofillHints.email],
+                              textInputAction: TextInputAction.next,
+                              obscureText: false,
+                              decoration: InputDecoration(
+                                labelStyle: FlutterFlowTheme.of(context)
+                                    .labelMedium
+                                    .override(
+                                      fontFamily: 'Inter',
+                                      letterSpacing: 0.0,
+                                    ),
+                                hintText: FFLocalizations.of(context).getText(
+                                  'tny5vtfr' /* E-mail */,
                                 ),
-                        hintText: FFLocalizations.of(context).getText(
-                          'tny5vtfr' /* E-mail */,
-                        ),
-                        hintStyle:
-                            FlutterFlowTheme.of(context).labelMedium.override(
-                                  fontFamily: 'Inter',
-                                  color: const Color(0x6614181B),
-                                  fontSize: 17.0,
-                                  letterSpacing: 0.0,
+                                hintStyle: FlutterFlowTheme.of(context)
+                                    .labelMedium
+                                    .override(
+                                      fontFamily: 'Inter',
+                                      color: const Color(0x6614181B),
+                                      fontSize: 17.0,
+                                      letterSpacing: 0.0,
+                                    ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFD5DDE0),
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12.0),
                                 ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Color(0xFFD5DDE0),
-                            width: 1.0,
-                          ),
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: FlutterFlowTheme.of(context).primary,
-                            width: 1.0,
-                          ),
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: FlutterFlowTheme.of(context).error,
-                            width: 1.0,
-                          ),
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: FlutterFlowTheme.of(context).error,
-                            width: 1.0,
-                          ),
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xFFF7F8F9),
-                      ),
-                      style: FlutterFlowTheme.of(context).bodyMedium.override(
-                            fontFamily: 'Inter',
-                            fontSize: 17.0,
-                            letterSpacing: 0.0,
-                          ),
-                      keyboardType: TextInputType.emailAddress,
-                      validator: _model.emailFieldTextControllerValidator
-                          .asValidator(context),
-                    ),
-                  ].divide(const SizedBox(height: 10.0)),
-                ),
-                FFButtonWidget(
-                  onPressed: () async {
-                    if (_model.emailFieldTextController.text.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Email required!',
-                          ),
-                        ),
-                      );
-                      return;
-                    }
-
-                    await authManager.updateEmail(
-                      email: _model.emailFieldTextController.text,
-                      context: context,
-                    );
-                    setState(() {});
-
-                    await showDialog(
-                      context: context,
-                      builder: (alertDialogContext) {
-                        return AlertDialog(
-                          title: const Text('E-mail update'),
-                          content:
-                              const Text('You e-mail has been successfully updated'),
-                          actions: [
-                            TextButton(
-                              onPressed: () =>
-                                  Navigator.pop(alertDialogContext),
-                              child: const Text('Ok'),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: FlutterFlowTheme.of(context).primary,
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: FlutterFlowTheme.of(context).error,
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: FlutterFlowTheme.of(context).error,
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                filled: true,
+                                fillColor: const Color(0xFFF7F8F9),
+                              ),
+                              style: FlutterFlowTheme.of(context)
+                                  .bodyMedium
+                                  .override(
+                                    fontFamily: 'Inter',
+                                    fontSize: 17.0,
+                                    letterSpacing: 0.0,
+                                  ),
+                              keyboardType: TextInputType.emailAddress,
+                              validator: _model
+                                  .emailFieldTextControllerValidator
+                                  .asValidator(context),
+                            ),
+                            Padding(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                  0.0, 12.0, 0.0, 0.0),
+                              child: AuthUserStreamWidget(
+                                builder: (context) => TextFormField(
+                                  controller: _model.phoneFieldTextController,
+                                  focusNode: _model.phoneFieldFocusNode,
+                                  autofocus: false,
+                                  autofillHints: const [AutofillHints.email],
+                                  textInputAction: TextInputAction.done,
+                                  obscureText: false,
+                                  decoration: InputDecoration(
+                                    labelStyle: FlutterFlowTheme.of(context)
+                                        .labelMedium
+                                        .override(
+                                          fontFamily: 'Inter',
+                                          letterSpacing: 0.0,
+                                        ),
+                                    hintText:
+                                        FFLocalizations.of(context).getText(
+                                      '2suniw33' /* Телефон */,
+                                    ),
+                                    hintStyle: FlutterFlowTheme.of(context)
+                                        .labelMedium
+                                        .override(
+                                          fontFamily: 'Inter',
+                                          color: const Color(0x6614181B),
+                                          fontSize: 17.0,
+                                          letterSpacing: 0.0,
+                                        ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                        color: Color(0xFFD5DDE0),
+                                        width: 1.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12.0),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .primary,
+                                        width: 1.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12.0),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                            FlutterFlowTheme.of(context).error,
+                                        width: 1.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12.0),
+                                    ),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                            FlutterFlowTheme.of(context).error,
+                                        width: 1.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12.0),
+                                    ),
+                                    filled: true,
+                                    fillColor: const Color(0xFFF7F8F9),
+                                  ),
+                                  style: FlutterFlowTheme.of(context)
+                                      .bodyMedium
+                                      .override(
+                                        fontFamily: 'Inter',
+                                        fontSize: 17.0,
+                                        letterSpacing: 0.0,
+                                      ),
+                                  keyboardType: TextInputType.phone,
+                                  validator: _model
+                                      .phoneFieldTextControllerValidator
+                                      .asValidator(context),
+                                ),
+                              ),
                             ),
                           ],
-                        );
-                      },
-                    );
-                  },
-                  text: FFLocalizations.of(context).getText(
-                    '0h12thyb' /* Обновить */,
-                  ),
-                  options: FFButtonOptions(
-                    height: 46.0,
-                    padding:
-                        const EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
-                    iconPadding:
-                        const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                    color: FlutterFlowTheme.of(context).primary,
-                    textStyle: FlutterFlowTheme.of(context).titleSmall.override(
-                          fontFamily: 'Inter',
-                          color: Colors.white,
-                          letterSpacing: 0.0,
                         ),
-                    elevation: 0.0,
-                    borderSide: const BorderSide(
-                      color: Colors.transparent,
-                      width: 1.0,
-                    ),
-                    borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ].divide(const SizedBox(height: 10.0)),
                   ),
-                ),
-              ]
-                  .divide(const SizedBox(height: 12.0))
-                  .addToStart(const SizedBox(height: 12.0))
-                  .addToEnd(const SizedBox(height: 12.0)),
+                  FFButtonWidget(
+                    onPressed: () async {
+                      if (_model.emailFieldTextController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Email required!',
+                            ),
+                          ),
+                        );
+                        return;
+                      }
+
+                      await authManager.updateEmail(
+                        email: _model.emailFieldTextController.text,
+                        context: context,
+                      );
+                      safeSetState(() {});
+
+                      await currentUserReference!.update(createUsersRecordData(
+                        email: _model.emailFieldTextController.text,
+                        phoneNumber: _model.phoneFieldTextController.text,
+                      ));
+                    },
+                    text: FFLocalizations.of(context).getText(
+                      '0h12thyb' /* Обновить */,
+                    ),
+                    options: FFButtonOptions(
+                      height: 46.0,
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
+                      iconPadding:
+                          const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                      color: FlutterFlowTheme.of(context).primary,
+                      textStyle:
+                          FlutterFlowTheme.of(context).titleSmall.override(
+                                fontFamily: 'Inter',
+                                color: Colors.white,
+                                letterSpacing: 0.0,
+                              ),
+                      elevation: 0.0,
+                      borderSide: const BorderSide(
+                        color: Colors.transparent,
+                        width: 1.0,
+                      ),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                ]
+                    .divide(const SizedBox(height: 12.0))
+                    .addToStart(const SizedBox(height: 12.0))
+                    .addToEnd(const SizedBox(height: 12.0)),
+              ),
             ),
           ),
         ),

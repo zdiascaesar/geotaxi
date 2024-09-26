@@ -16,7 +16,6 @@ class Client1Model extends FlutterFlowModel<Client1Widget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // Model for SideBar component.
   late SideBarModel sideBarModel;
 

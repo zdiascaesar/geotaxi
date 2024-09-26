@@ -1,9 +1,10 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
+import '/components/language_alert_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import '/flutter_flow/custom_functions.dart' as functions;
+import 'package:aligned_dialog/aligned_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'side_bar_model.dart';
@@ -23,6 +24,8 @@ class SideBarWidget extends StatefulWidget {
 
 class _SideBarWidgetState extends State<SideBarWidget> {
   late SideBarModel _model;
+
+  LatLng? currentUserLocationValue;
 
   @override
   void setState(VoidCallback callback) {
@@ -113,6 +116,7 @@ class _SideBarWidgetState extends State<SideBarWidget> {
                       child: AuthUserStreamWidget(
                         builder: (context) => Text(
                           '$currentUserDisplayName ${valueOrDefault(currentUserDocument?.secondname, '')}',
+                          maxLines: 1,
                           style:
                               FlutterFlowTheme.of(context).bodyMedium.override(
                                     fontFamily: 'Inter',
@@ -180,17 +184,14 @@ class _SideBarWidgetState extends State<SideBarWidget> {
 
                                     return Text(
                                       valueOrDefault<String>(
-                                        functions
-                                            .avgRating(
-                                                textReviewsRecordList.length
-                                                    .toDouble(),
-                                                valueOrDefault(
-                                                    currentUserDocument?.rating,
-                                                    0.0))
+                                        valueOrDefault(
+                                                currentUserDocument?.rating,
+                                                0.0)
                                             .toString(),
-                                        '0.0',
+                                        '5.0',
                                       ).maybeHandleOverflow(maxChars: 3),
                                       textAlign: TextAlign.center,
+                                      maxLines: 1,
                                       style: FlutterFlowTheme.of(context)
                                           .bodyMedium
                                           .override(
@@ -251,67 +252,132 @@ class _SideBarWidgetState extends State<SideBarWidget> {
                             ),
                           ),
                         ),
-                        FutureBuilder<int>(
-                          future: queryRidesRecordCount(
-                            queryBuilder: (ridesRecord) =>
-                                ridesRecord.where(Filter.or(
-                              Filter(
-                                'user_id',
-                                isEqualTo: currentUserReference,
+                        if (valueOrDefault(currentUserDocument?.role, 0) == 1)
+                          AuthUserStreamWidget(
+                            builder: (context) => FutureBuilder<int>(
+                              future: queryRidesRecordCount(
+                                queryBuilder: (ridesRecord) => ridesRecord
+                                    .where(
+                                      'assigned_driver',
+                                      isEqualTo: currentUserReference,
+                                    )
+                                    .where(
+                                      'status',
+                                      isGreaterThan: 2,
+                                    ),
                               ),
-                              Filter(
-                                'assigned_driver',
-                                isEqualTo: currentUserReference,
-                              ),
-                            )),
-                          ),
-                          builder: (context, snapshot) {
-                            // Customize what your widget looks like when it's loading.
-                            if (!snapshot.hasData) {
-                              return Center(
-                                child: SizedBox(
-                                  width: 30.0,
-                                  height: 30.0,
-                                  child: SpinKitPulse(
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    size: 30.0,
-                                  ),
-                                ),
-                              );
-                            }
-                            int containerCount = snapshot.data!;
-
-                            return Container(
-                              width: 37.0,
-                              height: 22.0,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF7F8F9),
-                                borderRadius: BorderRadius.circular(11.0),
-                                border: Border.all(
-                                  color: const Color(0xFFD5DDE0),
-                                  width: 1.0,
-                                ),
-                              ),
-                              child: Align(
-                                alignment: const AlignmentDirectional(0.0, 0.0),
-                                child: Text(
-                                  valueOrDefault<String>(
-                                    containerCount.toString(),
-                                    '0',
-                                  ),
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .override(
-                                        fontFamily: 'Inter',
+                              builder: (context, snapshot) {
+                                // Customize what your widget looks like when it's loading.
+                                if (!snapshot.hasData) {
+                                  return Center(
+                                    child: SizedBox(
+                                      width: 30.0,
+                                      height: 30.0,
+                                      child: SpinKitPulse(
                                         color: FlutterFlowTheme.of(context)
                                             .primary,
-                                        letterSpacing: 0.0,
+                                        size: 30.0,
                                       ),
-                                ),
+                                    ),
+                                  );
+                                }
+                                int containerCount = snapshot.data!;
+
+                                return Container(
+                                  width: 37.0,
+                                  height: 22.0,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF7F8F9),
+                                    borderRadius: BorderRadius.circular(11.0),
+                                    border: Border.all(
+                                      color: const Color(0xFFD5DDE0),
+                                      width: 1.0,
+                                    ),
+                                  ),
+                                  child: Align(
+                                    alignment: const AlignmentDirectional(0.0, 0.0),
+                                    child: Text(
+                                      valueOrDefault<String>(
+                                        containerCount.toString(),
+                                        '0',
+                                      ),
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            fontFamily: 'Inter',
+                                            color: FlutterFlowTheme.of(context)
+                                                .primary,
+                                            letterSpacing: 0.0,
+                                          ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        if (valueOrDefault(currentUserDocument?.role, 0) == 0)
+                          AuthUserStreamWidget(
+                            builder: (context) => FutureBuilder<int>(
+                              future: queryRidesRecordCount(
+                                queryBuilder: (ridesRecord) => ridesRecord
+                                    .where(
+                                      'user_id',
+                                      isEqualTo: currentUserReference,
+                                    )
+                                    .where(
+                                      'status',
+                                      isGreaterThan: 2,
+                                    ),
                               ),
-                            );
-                          },
-                        ),
+                              builder: (context, snapshot) {
+                                // Customize what your widget looks like when it's loading.
+                                if (!snapshot.hasData) {
+                                  return Center(
+                                    child: SizedBox(
+                                      width: 30.0,
+                                      height: 30.0,
+                                      child: SpinKitPulse(
+                                        color: FlutterFlowTheme.of(context)
+                                            .primary,
+                                        size: 30.0,
+                                      ),
+                                    ),
+                                  );
+                                }
+                                int containerCount = snapshot.data!;
+
+                                return Container(
+                                  width: 37.0,
+                                  height: 22.0,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF7F8F9),
+                                    borderRadius: BorderRadius.circular(11.0),
+                                    border: Border.all(
+                                      color: const Color(0xFFD5DDE0),
+                                      width: 1.0,
+                                    ),
+                                  ),
+                                  child: Align(
+                                    alignment: const AlignmentDirectional(0.0, 0.0),
+                                    child: Text(
+                                      valueOrDefault<String>(
+                                        containerCount.toString(),
+                                        '0',
+                                      ),
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            fontFamily: 'Inter',
+                                            color: FlutterFlowTheme.of(context)
+                                                .primary,
+                                            letterSpacing: 0.0,
+                                          ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -460,13 +526,21 @@ class _SideBarWidgetState extends State<SideBarWidget> {
                   if ((valueOrDefault<bool>(
                               currentUserDocument?.readyForWork, false) ==
                           false) &&
-                      (valueOrDefault(currentUserDocument?.role, 0) == 1))
+                      (valueOrDefault(currentUserDocument?.role, 0) == 1) &&
+                      (valueOrDefault<bool>(
+                              currentUserDocument?.inprogress, false) ==
+                          false))
                     AuthUserStreamWidget(
                       builder: (context) => FFButtonWidget(
                         onPressed: () async {
+                          currentUserLocationValue =
+                              await getCurrentUserLocation(
+                                  defaultLocation: const LatLng(0.0, 0.0));
+
                           await currentUserReference!
                               .update(createUsersRecordData(
                             readyForWork: true,
+                            driverLocation: currentUserLocationValue,
                           ));
                           Navigator.pop(context);
                         },
@@ -499,7 +573,10 @@ class _SideBarWidgetState extends State<SideBarWidget> {
                   if ((valueOrDefault<bool>(
                               currentUserDocument?.readyForWork, false) ==
                           true) &&
-                      (valueOrDefault(currentUserDocument?.role, 0) == 1))
+                      (valueOrDefault(currentUserDocument?.role, 0) == 1) &&
+                      (valueOrDefault<bool>(
+                              currentUserDocument?.inprogress, false) ==
+                          false))
                     AuthUserStreamWidget(
                       builder: (context) => FFButtonWidget(
                         onPressed: () async {
@@ -583,33 +660,13 @@ class _SideBarWidgetState extends State<SideBarWidget> {
             padding: const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 50.0),
             child: Row(
               mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                InkWell(
-                  splashColor: Colors.transparent,
-                  focusColor: Colors.transparent,
-                  hoverColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  onTap: () async {
-                    GoRouter.of(context).prepareAuthEvent(true);
-                    await authManager.signOut();
-                    GoRouter.of(context).clearRedirectLocation();
-
-                    context.goNamedAuth(
-                      'LoginPage',
-                      context.mounted,
-                      ignoreRedirect: true,
-                    );
-                  },
-                  child: Icon(
-                    FFIcons.karrowlefttoline,
-                    color: FlutterFlowTheme.of(context).primary,
-                    size: 24.0,
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(6.0, 0.0, 0.0, 0.0),
-                    child: InkWell(
+                if (valueOrDefault<bool>(
+                        currentUserDocument?.inprogress, false) !=
+                    true)
+                  AuthUserStreamWidget(
+                    builder: (context) => InkWell(
                       splashColor: Colors.transparent,
                       focusColor: Colors.transparent,
                       hoverColor: Colors.transparent,
@@ -619,30 +676,101 @@ class _SideBarWidgetState extends State<SideBarWidget> {
                         await authManager.signOut();
                         GoRouter.of(context).clearRedirectLocation();
 
+                        await currentUserReference!
+                            .update(createUsersRecordData(
+                          readyForWork: false,
+                        ));
+
                         context.goNamedAuth(
                           'LoginPage',
                           context.mounted,
                           ignoreRedirect: true,
                         );
                       },
-                      child: Text(
-                        FFLocalizations.of(context).getText(
-                          '5qvsxtuk' /* Выйти */,
-                        ),
-                        style: FlutterFlowTheme.of(context).bodyMedium.override(
-                              fontFamily: 'Inter',
-                              color: FlutterFlowTheme.of(context).primary,
-                              fontSize: 17.0,
-                              letterSpacing: 0.0,
-                            ),
+                      child: Icon(
+                        FFIcons.karrowlefttoline,
+                        color: FlutterFlowTheme.of(context).primary,
+                        size: 24.0,
                       ),
                     ),
                   ),
-                ),
-                Icon(
-                  Icons.language_sharp,
-                  color: FlutterFlowTheme.of(context).primaryText,
-                  size: 24.0,
+                if (valueOrDefault<bool>(
+                        currentUserDocument?.inprogress, false) !=
+                    true)
+                  Expanded(
+                    child: Padding(
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(6.0, 0.0, 0.0, 0.0),
+                      child: AuthUserStreamWidget(
+                        builder: (context) => InkWell(
+                          splashColor: Colors.transparent,
+                          focusColor: Colors.transparent,
+                          hoverColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: () async {
+                            await currentUserReference!
+                                .update(createUsersRecordData(
+                              readyForWork: false,
+                            ));
+                            GoRouter.of(context).prepareAuthEvent(true);
+                            await authManager.signOut();
+                            GoRouter.of(context).clearRedirectLocation();
+
+                            context.goNamedAuth(
+                              'LoginPage',
+                              context.mounted,
+                              ignoreRedirect: true,
+                            );
+                          },
+                          child: Text(
+                            FFLocalizations.of(context).getText(
+                              '5qvsxtuk' /* Выйти */,
+                            ),
+                            style: FlutterFlowTheme.of(context)
+                                .bodyMedium
+                                .override(
+                                  fontFamily: 'Inter',
+                                  color: FlutterFlowTheme.of(context).primary,
+                                  fontSize: 17.0,
+                                  letterSpacing: 0.0,
+                                ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                Align(
+                  alignment: const AlignmentDirectional(1.0, 0.0),
+                  child: Builder(
+                    builder: (context) => InkWell(
+                      splashColor: Colors.transparent,
+                      focusColor: Colors.transparent,
+                      hoverColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      onTap: () async {
+                        await showAlignedDialog(
+                          context: context,
+                          isGlobal: false,
+                          avoidOverflow: true,
+                          targetAnchor: const AlignmentDirectional(-1.0, -1.0)
+                              .resolve(Directionality.of(context)),
+                          followerAnchor: const AlignmentDirectional(1.0, 1.0)
+                              .resolve(Directionality.of(context)),
+                          builder: (dialogContext) {
+                            return const Material(
+                              color: Colors.transparent,
+                              child: LanguageAlertWidget(),
+                            );
+                          },
+                        );
+                      },
+                      child: Icon(
+                        Icons.language_sharp,
+                        color: FlutterFlowTheme.of(context).primaryText,
+                        size: 24.0,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
