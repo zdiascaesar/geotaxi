@@ -100,6 +100,41 @@ class RidesRecord extends FirestoreRecord {
   String get uid => _uid ?? '';
   bool hasUid() => _uid != null;
 
+  // "order_type" field.
+  int? _orderType;
+  int get orderType => _orderType ?? 0;
+  bool hasOrderType() => _orderType != null;
+
+  // "sender_phone" field.
+  String? _senderPhone;
+  String get senderPhone => _senderPhone ?? '';
+  bool hasSenderPhone() => _senderPhone != null;
+
+  // "recipient_phone" field.
+  String? _recipientPhone;
+  String get recipientPhone => _recipientPhone ?? '';
+  bool hasRecipientPhone() => _recipientPhone != null;
+
+  // "delivery_comment" field.
+  String? _deliveryComment;
+  String get deliveryComment => _deliveryComment ?? '';
+  bool hasDeliveryComment() => _deliveryComment != null;
+
+  // "door_to_door" field.
+  bool? _doorToDoor;
+  bool get doorToDoor => _doorToDoor ?? false;
+  bool hasDoorToDoor() => _doorToDoor != null;
+
+  // "driver_arrived_at" field.
+  DateTime? _driverArrivedAt;
+  DateTime? get driverArrivedAt => _driverArrivedAt;
+  bool hasDriverArrivedAt() => _driverArrivedAt != null;
+
+  // "waiting_cost" field.
+  double? _waitingCost;
+  double get waitingCost => _waitingCost ?? 0.0;
+  bool hasWaitingCost() => _waitingCost != null;
+
   void _initializeFields() {
     _userId = snapshotData['user_id'] as DocumentReference?;
     _fromLocation = snapshotData['from_location'] as LatLng?;
@@ -118,6 +153,13 @@ class RidesRecord extends FirestoreRecord {
     _latlng = snapshotData['latlng'] as LatLng?;
     _createdAt = snapshotData['created_at'] as DateTime?;
     _uid = snapshotData['uid'] as String?;
+    _orderType = castToType<int>(snapshotData['order_type']);
+    _senderPhone = snapshotData['sender_phone'] as String?;
+    _recipientPhone = snapshotData['recipient_phone'] as String?;
+    _deliveryComment = snapshotData['delivery_comment'] as String?;
+    _doorToDoor = snapshotData['door_to_door'] as bool?;
+    _driverArrivedAt = snapshotData['driver_arrived_at'] as DateTime?;
+    _waitingCost = castToType<double>(snapshotData['waiting_cost']);
   }
 
   static CollectionReference get collection =>
@@ -171,6 +213,13 @@ Map<String, dynamic> createRidesRecordData({
   LatLng? latlng,
   DateTime? createdAt,
   String? uid,
+  int? orderType,
+  String? senderPhone,
+  String? recipientPhone,
+  String? deliveryComment,
+  bool? doorToDoor,
+  DateTime? driverArrivedAt,
+  double? waitingCost,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -191,6 +240,13 @@ Map<String, dynamic> createRidesRecordData({
       'latlng': latlng,
       'created_at': createdAt,
       'uid': uid,
+      'order_type': orderType,
+      'sender_phone': senderPhone,
+      'recipient_phone': recipientPhone,
+      'delivery_comment': deliveryComment,
+      'door_to_door': doorToDoor,
+      'driver_arrived_at': driverArrivedAt,
+      'waiting_cost': waitingCost,
     }.withoutNulls,
   );
 
@@ -218,7 +274,14 @@ class RidesRecordDocumentEquality implements Equality<RidesRecord> {
         e1?.readyToPickup == e2?.readyToPickup &&
         e1?.latlng == e2?.latlng &&
         e1?.createdAt == e2?.createdAt &&
-        e1?.uid == e2?.uid;
+        e1?.uid == e2?.uid &&
+        e1?.orderType == e2?.orderType &&
+        e1?.senderPhone == e2?.senderPhone &&
+        e1?.recipientPhone == e2?.recipientPhone &&
+        e1?.deliveryComment == e2?.deliveryComment &&
+        e1?.doorToDoor == e2?.doorToDoor &&
+        e1?.driverArrivedAt == e2?.driverArrivedAt &&
+        e1?.waitingCost == e2?.waitingCost;
   }
 
   @override
@@ -239,7 +302,14 @@ class RidesRecordDocumentEquality implements Equality<RidesRecord> {
         e?.readyToPickup,
         e?.latlng,
         e?.createdAt,
-        e?.uid
+        e?.uid,
+        e?.orderType,
+        e?.senderPhone,
+        e?.recipientPhone,
+        e?.deliveryComment,
+        e?.doorToDoor,
+        e?.driverArrivedAt,
+        e?.waitingCost
       ]);
 
   @override

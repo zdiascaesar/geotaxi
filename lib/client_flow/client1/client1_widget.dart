@@ -3,7 +3,9 @@ import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
 import '/side_bar_client/side_bar/side_bar_widget.dart';
+import '/client_flow/delivery_bottom_sheet/delivery_bottom_sheet_widget.dart';
 import '/custom_code/widgets/index.dart' as custom_widgets;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -170,11 +172,14 @@ class _Client1WidgetState extends State<Client1Widget> {
                         ),
                       ),
                     ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
                           Padding(
                             padding: const EdgeInsetsDirectional.fromSTEB(
                                 0.0, 0.0, 0.0, 2.0),
@@ -227,6 +232,7 @@ class _Client1WidgetState extends State<Client1Widget> {
                                     readyToPickup: false,
                                     createdAt: getCurrentTimestamp,
                                     uid: widget.newRide?.reference.id,
+                                    orderType: 0, // Explicitly set as taxi order
                                   ));
                                   FFAppState().fromWhere = null;
                                   FFAppState().toWhere = null;
@@ -334,11 +340,60 @@ class _Client1WidgetState extends State<Client1Widget> {
                               ),
                             ),
                           ),
-                        ]
-                            .divide(const SizedBox(width: 10.0))
-                            .addToStart(const SizedBox(width: 16.0))
-                            .addToEnd(const SizedBox(width: 16.0)),
-                      ),
+                            ]
+                                .divide(const SizedBox(width: 10.0))
+                                .addToStart(const SizedBox(width: 16.0))
+                                .addToEnd(const SizedBox(width: 16.0)),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsetsDirectional.fromSTEB(16.0, 16.0, 16.0, 0.0),
+                          child: FFButtonWidget(
+                            onPressed: () async {
+                              await showModalBottomSheet(
+                                isScrollControlled: true,
+                                backgroundColor: Colors.transparent,
+                                enableDrag: false,
+                                context: context,
+                                builder: (context) {
+                                  return GestureDetector(
+                                    onTap: () => FocusScope.of(context).unfocus(),
+                                    child: Padding(
+                                      padding: MediaQuery.viewInsetsOf(context),
+                                      child: DeliveryBottomSheetWidget(
+                                        newRide: widget.newRide,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                            text: FFLocalizations.of(context).getText('deliver_cargo'),
+                            icon: const Icon(
+                              Icons.local_shipping_outlined,
+                              size: 20.0,
+                            ),
+                            options: FFButtonOptions(
+                              width: double.infinity,
+                              height: 42.0,
+                              padding: const EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
+                              iconPadding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 8.0, 0.0),
+                              color: FlutterFlowTheme.of(context).primary,
+                              textStyle: FlutterFlowTheme.of(context).titleSmall.override(
+                                    fontFamily: 'Inter',
+                                    color: Colors.white,
+                                    letterSpacing: 0.0,
+                                  ),
+                              elevation: 0.0,
+                              borderSide: const BorderSide(
+                                color: Colors.transparent,
+                                width: 1.0,
+                              ),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ].addToEnd(const SizedBox(height: 60.0)),
                 ),

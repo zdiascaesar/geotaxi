@@ -1172,6 +1172,54 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'tr': 'Ev',
     },
   },
+  // Delivery
+  {
+    'deliver_cargo': {
+      'ru': 'Доставить груз',
+      'en': 'Deliver cargo',
+      'tr': 'Kargo teslim',
+    },
+    'delivery_details': {
+      'ru': 'Детали доставки',
+      'en': 'Delivery details',
+      'tr': 'Teslimat detayları',
+    },
+    'sender_phone': {
+      'ru': 'Телефон отправителя',
+      'en': 'Sender phone',
+      'tr': 'Gönderen telefonu',
+    },
+    'recipient_phone': {
+      'ru': 'Телефон получателя',
+      'en': 'Recipient phone',
+      'tr': 'Alıcı telefonu',
+    },
+    'delivery_comment': {
+      'ru': 'Комментарий к заказу',
+      'en': 'Order comment',
+      'tr': 'Sipariş yorumu',
+    },
+    'door_to_door': {
+      'ru': 'От двери до двери',
+      'en': 'Door to door',
+      'tr': 'Kapıdan kapıya',
+    },
+    'order_delivery': {
+      'ru': 'Заказать доставку',
+      'en': 'Order delivery',
+      'tr': 'Teslimat siparişi',
+    },
+    'phone_required': {
+      'ru': 'Введите номер телефона',
+      'en': 'Enter phone number',
+      'tr': 'Telefon numarasını girin',
+    },
+    'invalid_phone': {
+      'ru': 'Неверный формат номера',
+      'en': 'Invalid phone format',
+      'tr': 'Geçersiz telefon formatı',
+    },
+  },
   // Client1
   {
     'i2qwaq2n': {
@@ -1434,6 +1482,11 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'ru': 'Написать водителю',
       'en': 'Write to the driver',
       'tr': 'Sürücüye yaz',
+    },
+    'driver_near': {
+      'ru': 'Водитель в 10 метрах от вас!',
+      'en': 'Driver is 10 meters away!',
+      'tr': 'Sürücü 10 metre uzakta!',
     },
     'burb6pdp': {
       'ru': 'Home',

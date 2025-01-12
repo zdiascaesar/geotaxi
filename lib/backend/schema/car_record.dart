@@ -35,6 +35,16 @@ class CarRecord extends FirestoreRecord {
   String get license => _license ?? '';
   bool hasLicense() => _license != null;
 
+  // "moderation" field.
+  bool? _moderation;
+  bool get moderation => _moderation ?? false;
+  bool hasModeration() => _moderation != null;
+
+  // "car_type_ref" field.
+  DocumentReference? _carTypeRef;
+  DocumentReference? get carTypeRef => _carTypeRef;
+  bool hasCarTypeRef() => _carTypeRef != null;
+
   DocumentReference get parentReference => reference.parent.parent!;
 
   void _initializeFields() {
@@ -42,6 +52,8 @@ class CarRecord extends FirestoreRecord {
     _model = snapshotData['model'] as String?;
     _plate = snapshotData['plate'] as String?;
     _license = snapshotData['license'] as String?;
+    _moderation = snapshotData['moderation'] as bool?;
+    _carTypeRef = snapshotData['car_type_ref'] as DocumentReference?;
   }
 
   static Query<Map<String, dynamic>> collection([DocumentReference? parent]) =>
@@ -87,6 +99,8 @@ Map<String, dynamic> createCarRecordData({
   String? model,
   String? plate,
   String? license,
+  bool? moderation,
+  DocumentReference? carTypeRef,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -94,6 +108,8 @@ Map<String, dynamic> createCarRecordData({
       'model': model,
       'plate': plate,
       'license': license,
+      'moderation': moderation,
+      'car_type_ref': carTypeRef,
     }.withoutNulls,
   );
 
@@ -108,12 +124,14 @@ class CarRecordDocumentEquality implements Equality<CarRecord> {
     return e1?.brand == e2?.brand &&
         e1?.model == e2?.model &&
         e1?.plate == e2?.plate &&
-        e1?.license == e2?.license;
+        e1?.license == e2?.license &&
+        e1?.moderation == e2?.moderation &&
+        e1?.carTypeRef == e2?.carTypeRef;
   }
 
   @override
   int hash(CarRecord? e) =>
-      const ListEquality().hash([e?.brand, e?.model, e?.plate, e?.license]);
+      const ListEquality().hash([e?.brand, e?.model, e?.plate, e?.license, e?.moderation, e?.carTypeRef]);
 
   @override
   bool isValidKey(Object? o) => o is CarRecord;

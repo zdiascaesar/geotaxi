@@ -44,7 +44,6 @@ class _Client5WidgetState extends State<Client5Widget> {
     return StreamBuilder<RidesRecord>(
       stream: RidesRecord.getDocument(widget.ridePayment!),
       builder: (context, snapshot) {
-        // Customize what your widget looks like when it's loading.
         if (!snapshot.hasData) {
           return Scaffold(
             backgroundColor: const Color(0xFFF7F8F9),
@@ -62,6 +61,7 @@ class _Client5WidgetState extends State<Client5Widget> {
         }
 
         final client5RidesRecord = snapshot.data!;
+        final totalCost = client5RidesRecord.cost + (client5RidesRecord.waitingCost ?? 0.0);
 
         return GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
@@ -83,10 +83,7 @@ class _Client5WidgetState extends State<Client5Widget> {
                         BoxShadow(
                           blurRadius: 4.0,
                           color: Color(0x33000000),
-                          offset: Offset(
-                            0.0,
-                            2.0,
-                          ),
+                          offset: Offset(0.0, 2.0),
                         )
                       ],
                       borderRadius: BorderRadius.circular(16.0),
@@ -112,19 +109,14 @@ class _Client5WidgetState extends State<Client5Widget> {
                             },
                           ),
                           Padding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(
-                                0.0, 40.0, 0.0, 40.0),
+                            padding: const EdgeInsetsDirectional.fromSTEB(0.0, 40.0, 0.0, 40.0),
                             child: Text(
-                              FFLocalizations.of(context).getText(
-                                'yjxwi588' /* Поездка закончена */,
+                              FFLocalizations.of(context).getText('yjxwi588') /* Поездка закончена */,
+                              style: FlutterFlowTheme.of(context).titleLarge.override(
+                                fontFamily: 'Inter',
+                                letterSpacing: 0.0,
+                                fontWeight: FontWeight.w600,
                               ),
-                              style: FlutterFlowTheme.of(context)
-                                  .titleLarge
-                                  .override(
-                                    fontFamily: 'Inter',
-                                    letterSpacing: 0.0,
-                                    fontWeight: FontWeight.w600,
-                                  ),
                             ),
                           ),
                           Container(
@@ -144,63 +136,42 @@ class _Client5WidgetState extends State<Client5Widget> {
                                 children: [
                                   Row(
                                     mainAxisSize: MainAxisSize.max,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        FFLocalizations.of(context).getText(
-                                          'axn8vvgq' /* A */,
+                                        FFLocalizations.of(context).getText('axn8vvgq') /* A */,
+                                        style: FlutterFlowTheme.of(context).labelLarge.override(
+                                          fontFamily: 'Inter',
+                                          color: FlutterFlowTheme.of(context).primary,
+                                          letterSpacing: 0.0,
+                                          fontWeight: FontWeight.w500,
                                         ),
-                                        style: FlutterFlowTheme.of(context)
-                                            .labelLarge
-                                            .override(
-                                              fontFamily: 'Inter',
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primary,
-                                              letterSpacing: 0.0,
-                                              fontWeight: FontWeight.w500,
-                                            ),
                                       ),
                                       Expanded(
                                         child: Padding(
-                                          padding:
-                                              const EdgeInsetsDirectional.fromSTEB(
-                                                  10.0, 0.0, 0.0, 0.0),
+                                          padding: const EdgeInsetsDirectional.fromSTEB(10.0, 0.0, 0.0, 0.0),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.max,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.stretch,
+                                            crossAxisAlignment: CrossAxisAlignment.stretch,
                                             children: [
                                               Text(
                                                 client5RidesRecord.fromLoc,
-                                                style:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyMedium
-                                                        .override(
-                                                          fontFamily: 'Inter',
-                                                          letterSpacing: 0.0,
-                                                        ),
+                                                style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                  fontFamily: 'Inter',
+                                                  letterSpacing: 0.0,
+                                                ),
                                               ),
                                               Text(
                                                 dateTimeFormat(
                                                   "Hm",
-                                                  client5RidesRecord
-                                                      .pickedUpAt!,
-                                                  locale: FFLocalizations.of(
-                                                          context)
-                                                      .languageCode,
+                                                  client5RidesRecord.pickedUpAt!,
+                                                  locale: FFLocalizations.of(context).languageCode,
                                                 ),
-                                                style:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyMedium
-                                                        .override(
-                                                          fontFamily: 'Inter',
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .secondaryText,
-                                                          letterSpacing: 0.0,
-                                                        ),
+                                                style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                  fontFamily: 'Inter',
+                                                  color: FlutterFlowTheme.of(context).secondaryText,
+                                                  letterSpacing: 0.0,
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -215,63 +186,42 @@ class _Client5WidgetState extends State<Client5Widget> {
                                   ),
                                   Row(
                                     mainAxisSize: MainAxisSize.max,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        FFLocalizations.of(context).getText(
-                                          '45hp6kab' /* B */,
+                                        FFLocalizations.of(context).getText('45hp6kab') /* B */,
+                                        style: FlutterFlowTheme.of(context).labelLarge.override(
+                                          fontFamily: 'Inter',
+                                          color: FlutterFlowTheme.of(context).primary,
+                                          letterSpacing: 0.0,
+                                          fontWeight: FontWeight.w500,
                                         ),
-                                        style: FlutterFlowTheme.of(context)
-                                            .labelLarge
-                                            .override(
-                                              fontFamily: 'Inter',
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primary,
-                                              letterSpacing: 0.0,
-                                              fontWeight: FontWeight.w500,
-                                            ),
                                       ),
                                       Expanded(
                                         child: Padding(
-                                          padding:
-                                              const EdgeInsetsDirectional.fromSTEB(
-                                                  10.0, 0.0, 0.0, 0.0),
+                                          padding: const EdgeInsetsDirectional.fromSTEB(10.0, 0.0, 0.0, 0.0),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.max,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.stretch,
+                                            crossAxisAlignment: CrossAxisAlignment.stretch,
                                             children: [
                                               Text(
                                                 client5RidesRecord.toLoc,
-                                                style:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyMedium
-                                                        .override(
-                                                          fontFamily: 'Inter',
-                                                          letterSpacing: 0.0,
-                                                        ),
+                                                style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                  fontFamily: 'Inter',
+                                                  letterSpacing: 0.0,
+                                                ),
                                               ),
                                               Text(
                                                 dateTimeFormat(
                                                   "Hm",
-                                                  client5RidesRecord
-                                                      .droppedOffAt!,
-                                                  locale: FFLocalizations.of(
-                                                          context)
-                                                      .languageCode,
+                                                  client5RidesRecord.droppedOffAt!,
+                                                  locale: FFLocalizations.of(context).languageCode,
                                                 ),
-                                                style:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyMedium
-                                                        .override(
-                                                          fontFamily: 'Inter',
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .secondaryText,
-                                                          letterSpacing: 0.0,
-                                                        ),
+                                                style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                  fontFamily: 'Inter',
+                                                  color: FlutterFlowTheme.of(context).secondaryText,
+                                                  letterSpacing: 0.0,
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -284,99 +234,121 @@ class _Client5WidgetState extends State<Client5Widget> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(
-                                0.0, 10.0, 0.0, 20.0),
+                            padding: const EdgeInsetsDirectional.fromSTEB(0.0, 10.0, 0.0, 20.0),
                             child: Container(
                               width: double.infinity,
-                              height: 64.0,
                               decoration: BoxDecoration(
                                 color: const Color(0xFFF7F8F9),
                                 borderRadius: BorderRadius.circular(16.0),
                               ),
-                              child: Padding(
-                                padding: const EdgeInsetsDirectional.fromSTEB(
-                                    16.0, 0.0, 16.0, 0.0),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Icon(
-                                      FFIcons.kcreditcard,
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText,
-                                      size: 24.0,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // Base fare
+                                  Padding(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(16.0, 16.0, 16.0, 8.0),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          FFLocalizations.of(context).getText('ride_cost') /* Стоимость поездки */,
+                                          style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                            fontFamily: 'Inter',
+                                            color: FlutterFlowTheme.of(context).secondaryText,
+                                            letterSpacing: 0.0,
+                                          ),
+                                        ),
+                                        Text(
+                                          '${client5RidesRecord.cost.toStringAsFixed(2)} USDT',
+                                          style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                            fontFamily: 'Inter',
+                                            letterSpacing: 0.0,
+                                          ),
+                                        ),
+                                      ],
                                     ),
+                                  ),
+                                  // Waiting cost if applicable
+                                  if (client5RidesRecord.hasWaitingCost() && client5RidesRecord.waitingCost! > 0)
                                     Padding(
-                                      padding: const EdgeInsetsDirectional.fromSTEB(
-                                          6.0, 0.0, 0.0, 0.0),
-                                      child: AuthUserStreamWidget(
-                                        builder: (context) => Text(
-                                          valueOrDefault<String>(
-                                            valueOrDefault(
-                                                        currentUserDocument
-                                                            ?.role,
-                                                        0) ==
-                                                    0
-                                                ? 'С кошелька'
-                                                : 'На кошелек',
-                                            'С кошелька',
-                                          ),
-                                          style: FlutterFlowTheme.of(context)
-                                              .bodyMedium
-                                              .override(
-                                                fontFamily: 'Inter',
-                                                fontSize: 17.0,
-                                                letterSpacing: 0.0,
-                                              ),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Align(
-                                        alignment:
-                                            const AlignmentDirectional(1.0, 0.0),
-                                        child: AuthUserStreamWidget(
-                                          builder: (context) => Text(
-                                            valueOrDefault<String>(
-                                              '${valueOrDefault(currentUserDocument?.role, 0) == 0 ? '-' : '+'}${client5RidesRecord.cost.toString()} USDT',
-                                              'NULL',
+                                      padding: const EdgeInsetsDirectional.fromSTEB(16.0, 8.0, 16.0, 8.0),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            FFLocalizations.of(context).getText('waiting_cost') /* Время ожидания */,
+                                            style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                              fontFamily: 'Inter',
+                                              color: FlutterFlowTheme.of(context).secondaryText,
+                                              letterSpacing: 0.0,
                                             ),
-                                            style: FlutterFlowTheme.of(context)
-                                                .bodyMedium
-                                                .override(
-                                                  fontFamily: 'Inter',
-                                                  fontSize: 19.0,
-                                                  letterSpacing: 0.0,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
                                           ),
-                                        ),
+                                          Text(
+                                            '${client5RidesRecord.waitingCost!.toStringAsFixed(2)} USDT',
+                                            style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                              fontFamily: 'Inter',
+                                              letterSpacing: 0.0,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  // Total with divider
+                                  if (client5RidesRecord.hasWaitingCost() && client5RidesRecord.waitingCost! > 0)
+                                    const Divider(
+                                      height: 16.0,
+                                      thickness: 1.0,
+                                      color: Color(0xFFD5D5D5),
+                                    ),
+                                  // Total amount
+                                  Padding(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(16.0, 8.0, 16.0, 16.0),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          FFLocalizations.of(context).getText('total_cost') /* Итого */,
+                                          style: FlutterFlowTheme.of(context).titleMedium.override(
+                                            fontFamily: 'Inter',
+                                            letterSpacing: 0.0,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        AuthUserStreamWidget(
+                                          builder: (context) => Text(
+                                            '${valueOrDefault(currentUserDocument?.role, 0) == 0 ? '-' : '+'}${totalCost.toStringAsFixed(2)} USDT',
+                                            style: FlutterFlowTheme.of(context).titleMedium.override(
+                                              fontFamily: 'Inter',
+                                              letterSpacing: 0.0,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
                           FFButtonWidget(
                             onPressed: () async {
-                              if (valueOrDefault(
-                                      currentUserDocument?.role, 0) ==
-                                  0) {
+                              if (valueOrDefault(currentUserDocument?.role, 0) == 0) {
                                 await currentUserReference!.update({
                                   ...mapToFirestore(
                                     {
-                                      'balance': FieldValue.increment(
-                                          -(client5RidesRecord.cost)),
+                                      'balance': FieldValue.increment(-totalCost),
                                     },
                                   ),
                                 });
 
-                                await BalaceRecord.createDoc(
-                                        currentUserReference!)
+                                await BalaceRecord.createDoc(currentUserReference!)
                                     .set(createBalaceRecordData(
                                   type: 1,
-                                  amount: client5RidesRecord.cost,
+                                  amount: totalCost,
                                   at: getCurrentTimestamp,
                                 ));
 
@@ -396,41 +368,33 @@ class _Client5WidgetState extends State<Client5Widget> {
                                 await currentUserReference!.update({
                                   ...mapToFirestore(
                                     {
-                                      'balance': FieldValue.increment(
-                                          client5RidesRecord.cost),
+                                      'balance': FieldValue.increment(totalCost),
                                     },
                                   ),
                                 });
 
-                                await BalaceRecord.createDoc(
-                                        currentUserReference!)
+                                await BalaceRecord.createDoc(currentUserReference!)
                                     .set(createBalaceRecordData(
                                   type: 1,
-                                  amount: client5RidesRecord.cost,
+                                  amount: totalCost,
                                   at: getCurrentTimestamp,
                                 ));
 
                                 context.goNamed('HomePage');
                               }
                             },
-                            text: FFLocalizations.of(context).getText(
-                              'dsujn1pt' /* Готово */,
-                            ),
+                            text: FFLocalizations.of(context).getText('dsujn1pt') /* Готово */,
                             options: FFButtonOptions(
                               width: double.infinity,
                               height: 42.0,
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  24.0, 0.0, 24.0, 0.0),
-                              iconPadding: const EdgeInsetsDirectional.fromSTEB(
-                                  0.0, 0.0, 0.0, 0.0),
+                              padding: const EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
+                              iconPadding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
                               color: FlutterFlowTheme.of(context).primary,
-                              textStyle: FlutterFlowTheme.of(context)
-                                  .titleSmall
-                                  .override(
-                                    fontFamily: 'Inter',
-                                    color: Colors.white,
-                                    letterSpacing: 0.0,
-                                  ),
+                              textStyle: FlutterFlowTheme.of(context).titleSmall.override(
+                                fontFamily: 'Inter',
+                                color: Colors.white,
+                                letterSpacing: 0.0,
+                              ),
                               elevation: 0.0,
                               borderSide: const BorderSide(
                                 color: Colors.transparent,

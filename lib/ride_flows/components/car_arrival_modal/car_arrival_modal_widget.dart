@@ -107,6 +107,28 @@ class _CarArrivalModalWidgetState extends State<CarArrivalModalWidget> {
                         Expanded(
                           child: FFButtonWidget(
                             onPressed: () async {
+                              final now = DateTime.now();
+                              
+                              // Get the current ride data
+                              final rideDoc = await RidesRecord.getDocumentOnce(widget.carArrival!);
+                              
+                              if (rideDoc.hasDriverArrivedAt()) {
+                                // Calculate final waiting time and cost
+                                final waitingMinutes = now.difference(rideDoc.driverArrivedAt!).inMinutes;
+                                double finalWaitingCost = 0.0;
+                                
+                                if (waitingMinutes > 5) {
+                                  final extraMinutes = waitingMinutes - 5;
+                                  finalWaitingCost = extraMinutes * 0.10;
+                                }
+                                
+                                // Update ride with pickup time and final waiting cost
+                                await widget.carArrival!.update({
+                                  'PickedUp_at': now,
+                                  'waiting_cost': finalWaitingCost,
+                                });
+                              }
+                              
                               Navigator.pop(context);
                             },
                             text: FFLocalizations.of(context).getText(

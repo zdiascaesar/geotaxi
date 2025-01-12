@@ -1,3 +1,5 @@
+import '/auth/firebase_auth/auth_util.dart';
+import '/backend/backend.dart';
 import '/backend/firebase_storage/storage.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -495,6 +497,58 @@ class _RegistrationThreePageWidgetState
                     onPressed: () async {
                       FFAppState().role = 1;
                       setState(() {});
+
+                      // Create car record with moderation=false
+                      await currentUserReference!.collection('car').doc().set(
+                        createCarRecordData(
+                          brand: _model.typeCarTextController.text,
+                          model: _model.modelCarTextController.text,
+                          plate: _model.numberCarTextController.text,
+                          license: _model.uploadedFileUrl,
+                          moderation: false,
+                        ),
+                      );
+
+                      // Show moderation alert
+                      await showDialog(
+                        context: context,
+                        builder: (alertDialogContext) {
+                          return AlertDialog(
+                            title: Text(() {
+                              if (FFLocalizations.of(context).languageCode == 'ru') {
+                                return 'Модерация автомобиля';
+                              } else if (FFLocalizations.of(context).languageCode == 'tr') {
+                                return 'Araç Moderasyonu';
+                              } else {
+                                return 'Car Moderation';
+                              }
+                            }()),
+                            content: Text(() {
+                              if (FFLocalizations.of(context).languageCode == 'ru') {
+                                return 'Ваш автомобиль находится на модерации. После проверки вы сможете начать работу.';
+                              } else if (FFLocalizations.of(context).languageCode == 'tr') {
+                                return 'Aracınız moderasyon aşamasındadır. İnceleme sonrasında çalışmaya başlayabilirsiniz.';
+                              } else {
+                                return 'Your car is under moderation. You can start working after verification.';
+                              }
+                            }()),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(alertDialogContext),
+                                child: Text(() {
+                                  if (FFLocalizations.of(context).languageCode == 'ru') {
+                                    return 'OK';
+                                  } else if (FFLocalizations.of(context).languageCode == 'tr') {
+                                    return 'Tamam';
+                                  } else {
+                                    return 'OK';
+                                  }
+                                }()),
+                              ),
+                            ],
+                          );
+                        },
+                      );
 
                       context.goNamed('HomePage');
                     },

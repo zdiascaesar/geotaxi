@@ -3,6 +3,8 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import 'dart:math' show cos, sqrt, asin;
+import 'dart:async' show Timer;
 import '/ride_flows/components/car_arrival_modal/car_arrival_modal_widget.dart';
 import '/side_bar_client/side_bar/side_bar_widget.dart';
 import '/custom_code/widgets/index.dart' as custom_widgets;
@@ -27,9 +29,87 @@ class Client4Widget extends StatefulWidget {
 
 class _Client4WidgetState extends State<Client4Widget> {
   late Client4Model _model;
-
+  bool _notificationShown = false;
   final scaffoldKey = GlobalKey<ScaffoldState>();
   LatLng? currentUserLocationValue;
+  
+  double calculateDistance(LatLng point1, LatLng point2) {
+    var lat1 = point1.latitude;
+    var lon1 = point1.longitude;
+    var lat2 = point2.latitude;
+    var lon2 = point2.longitude;
+    
+    var p = 0.017453292519943295; // Math.PI / 180
+    var a = 0.5 - cos((lat2 - lat1) * p)/2 + 
+            cos(lat1 * p) * cos(lat2 * p) * 
+            (1 - cos((lon2 - lon1) * p))/2;
+    
+    return 12742 * asin(sqrt(a)) * 1000; // 2 * R * asin(sqrt(a)) where R = 6371 km, result in meters
+  }
+
+  void checkDriverDistance(LatLng driverLocation, DocumentReference rideRef) async {
+    if (_notificationShown || currentUserLocationValue == null) return;
+    
+    double distance = calculateDistance(currentUserLocationValue!, driverLocation);
+    
+    if (distance <= 10 && !_notificationShown) {
+      _notificationShown = true;
+      
+      // Set driver arrival time
+      await rideRef.update({
+        'driver_arrived_at': DateTime.now(),
+        'waiting_cost': 0.0,
+      });
+
+      // Start waiting time timer
+      Timer.periodic(Duration(minutes: 1), (timer) async {
+        final rideDoc = await RidesRecord.getDocumentOnce(rideRef);
+        
+        if (rideDoc.hasDriverArrivedAt() && !rideDoc.hasPickedUpAt()) {
+          final waitingMinutes = DateTime.now().difference(rideDoc.driverArrivedAt!).inMinutes;
+          
+          if (!rideDoc.hasPickedUpAt()) {
+            if (waitingMinutes > 5) { // After 5 minutes free waiting
+              final extraMinutes = waitingMinutes - 5;
+              final waitingCost = extraMinutes * 0.10; // 0.10 USDT per minute
+              
+              await rideRef.update({
+                'waiting_cost': waitingCost,
+              });
+            }
+          } else {
+            // Ride has started - finalize the waiting cost
+            final finalWaitingMinutes = rideDoc.pickedUpAt!.difference(rideDoc.driverArrivedAt!).inMinutes;
+            if (finalWaitingMinutes > 5) {
+              final extraMinutes = finalWaitingMinutes - 5;
+              final finalWaitingCost = extraMinutes * 0.10;
+              
+              await rideRef.update({
+                'waiting_cost': finalWaitingCost,
+              });
+            }
+            timer.cancel(); // Stop timer as ride has started
+          }
+        } else {
+          timer.cancel(); // Stop timer if cancelled
+        }
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            FFLocalizations.of(context).getText('driver_near') /* Водитель в 10 метрах от вас! */,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+          backgroundColor: FlutterFlowTheme.of(context).primary,
+          duration: Duration(seconds: 5),
+        ),
+      );
+    }
+  }
 
   @override
   void initState() {
@@ -173,6 +253,17 @@ class _Client4WidgetState extends State<Client4Widget> {
                   StreamBuilder<List<DriversRecord>>(
                     stream: queryDriversRecord(),
                     builder: (context, snapshot) {
+                      if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                        // Find the assigned driver's location
+                        final assignedDriver = snapshot.data!.firstWhere(
+                          (driver) => driver.reference == client4RidesRecord.assignedDriver,
+                          orElse: () => snapshot.data!.first,
+                        );
+                        
+                        if (assignedDriver.latlng != null) {
+                          checkDriverDistance(assignedDriver.latlng!, widget.foundDriver!);
+                        }
+                      }
                       // Customize what your widget looks like when it's loading.
                       if (!snapshot.hasData) {
                         return Center(
